@@ -145,7 +145,7 @@
     }
 
     
-    StringBuffer doChildInput(Item item,DCInput child,int count,int fieldCount, boolean repeatable,boolean readonly, int fieldCountIncr, PageContext pageContext,int collectionID, boolean last){
+    StringBuffer doChildInput(Item item,DCInput child,int count,int fieldCount, boolean repeatable,boolean readonly, int fieldCountIncr, PageContext pageContext,int collectionID, boolean last, boolean language, List<String> valueLanguageList){
       
       StringBuffer sb = new StringBuffer();
     	
@@ -174,7 +174,7 @@
 	  else if(StringUtils.equals(inputType, "textarea")){
 		  sb.append(doTextAreaInput(meta, count, childAuthorityType, fieldCount, childFieldName, childSchema, childElement, 
 				  childQualifier, repeatable, child.isRequired(), readonly, fieldCountIncr, pageContext, child.getVocabulary(),
-				  child.isClosedVocabulary(), collectionID, true));		  
+				  child.isClosedVocabulary(), collectionID, language, valueLanguageList, true));
 	  }
 	  else if(StringUtils.equals(inputType, "number")){
 		  sb.append(doNumberInput(meta, count, childAuthorityType, fieldCount, childFieldName, childSchema, childElement, 
@@ -183,7 +183,7 @@
 	  else{
 	  		sb.append(doOneBoxInput(meta, count, childAuthorityType, fieldCount, childFieldName, childSchema, childElement, 
 			  childQualifier, repeatable, child.isRequired(), readonly, fieldCountIncr, pageContext, child.getVocabulary(), 
-			  child.isClosedVocabulary(), collectionID,true));
+			  child.isClosedVocabulary(), collectionID, language, valueLanguageList, true));
 	  }
 	  
       if(last){
@@ -321,7 +321,7 @@
 
     void doPersonalName(javax.servlet.jsp.JspWriter out, Item item,
       String fieldName, String schema, String element, String qualifier, boolean repeatable, boolean required,
-      boolean readonly, int fieldCountIncr, String label, PageContext pageContext, int collectionID,List<DCInput> children,boolean hasParent)
+      boolean readonly, int fieldCountIncr, String label, PageContext pageContext, int collectionID, boolean language, List<String> valueLanguageList, List<DCInput> children,boolean hasParent)
       throws java.io.IOException
     {
    	  String authorityType = getAuthorityType(pageContext, fieldName, collectionID);
@@ -347,7 +347,7 @@
     	  if(children !=null){
     	      int countChild = 1;
 	    	  for(DCInput child: children){
-	    		  sb.append(doChildInput(item,child, i, fieldCount, repeatable,readonly,fieldCountIncr, pageContext, collectionID, children.size()==countChild));
+	    		  sb.append(doChildInput(item,child, i, fieldCount, repeatable,readonly,fieldCountIncr, pageContext, collectionID, children.size()==countChild, language, valueLanguageList));
 	    		  countChild++;
 	    	  }
     	  }
@@ -495,7 +495,7 @@
     
     void doDate(javax.servlet.jsp.JspWriter out, Item item,
       String fieldName, String schema, String element, String qualifier, boolean repeatable, boolean required,
-      boolean readonly, int fieldCountIncr, String label, PageContext pageContext, int collectionID,List<DCInput> children,boolean hasParent)
+      boolean readonly, int fieldCountIncr, String label, PageContext pageContext, int collectionID, boolean language, List<String> valueLanguageList, List<DCInput> children,boolean hasParent)
       throws java.io.IOException
     {
 
@@ -518,7 +518,7 @@
 	    	if(children !=null){
 	    	      int countChild = 1;    
 		    	  for(DCInput child: children){
-		    		  sb.append(doChildInput(item,child, i, fieldCount,repeatable,readonly, fieldCountIncr, pageContext, collectionID, children.size()==countChild));
+		    		  sb.append(doChildInput(item,child, i, fieldCount,repeatable,readonly, fieldCountIncr, pageContext, collectionID, children.size()==countChild, language, valueLanguageList));
 		    		  countChild++;
 		    	  }
 	    	}
@@ -660,7 +660,7 @@
          sb.append("<div class=\"row col-md-12\"><span class=\"col-md-5\"><input class=\"form-control\" type=\"text\" name=\"")
            .append(fieldName)
            .append("_series");
-         if (repeatable && i!= fieldCount)
+         if (repeatable)
            sb.append("_").append(i+1);
          if (readonly)
          {
@@ -673,7 +673,7 @@
            .append("\"/></span><span class=\"col-md-5\"><input class=\"form-control\" type=\"text\" name=\"")
            .append(fieldName)
            .append("_number");
-         if (repeatable && i!= fieldCount)
+         if (repeatable)
            sb.append("_").append(i+1);
          if (readonly)
          {
@@ -685,7 +685,7 @@
            .append(sn.getNumber().replaceAll("\"", "&quot;"))
            .append("\"/></span>\n");
 
-         if (repeatable && !readonly && i < defaults.length)
+         if (repeatable && !readonly && i < fieldCount - 1)
          {
             // put a remove button next to filled in values
             sb.append("<button class=\"btn btn-danger col-md-2\" name=\"submit_")
@@ -716,7 +716,8 @@
 
     void doTextArea(javax.servlet.jsp.JspWriter out, Item item,
       String fieldName, String schema, String element, String qualifier, boolean repeatable, boolean required, boolean readonly,
-      int fieldCountIncr, String label, PageContext pageContext, String vocabulary, boolean closedVocabulary, int collectionID,List<DCInput> children,boolean hasParent)
+      int fieldCountIncr, String label, PageContext pageContext, String vocabulary, boolean closedVocabulary, int collectionID,
+      boolean language, List<String> valueLanguageList, List<DCInput> children,boolean hasParent)
       throws java.io.IOException
     {
       String authorityType = getAuthorityType(pageContext, fieldName, collectionID);
@@ -737,11 +738,11 @@
         	.append(label)
           	.append("</label><div class=\"col-md-10\">");
 			sb.append(doTextAreaInput(defaults,i, authorityType, fieldCount, fieldName,  schema,  element, qualifier, 
-			   		 repeatable, required, readonly, fieldCountIncr, pageContext, vocabulary, closedVocabulary,collectionID,hasParent));
+			   		 repeatable, required, readonly, fieldCountIncr, pageContext, vocabulary, closedVocabulary, collectionID, language, valueLanguageList, hasParent));
 	    	if(children !=null){
 	    	      int countChild = 1;
 		    	  for(DCInput child: children){
-		    		  sb.append(doChildInput(item,child, i, fieldCount, repeatable,readonly,fieldCountIncr, pageContext, collectionID, children.size()==countChild));
+		    		  sb.append(doChildInput(item,child, i, fieldCount, repeatable,readonly,fieldCountIncr, pageContext, collectionID, children.size()==countChild, language, valueLanguageList));
 		    		  countChild++;
 		    	  }
 	    	}
@@ -754,14 +755,16 @@
     
     StringBuffer doTextAreaInput(Metadatum[] defaults,int count,String authorityType,int fieldCount, String fieldName, String schema, String element, 
     		String qualifier, boolean repeatable, boolean required, boolean readonly, int fieldCountIncr, PageContext pageContext,String vocabulary,
-    		boolean closedVocabulary,int collectionID,boolean hasParent){
+    		boolean closedVocabulary,int collectionID, boolean language, List<String> valueLanguageList, boolean hasParent){
         StringBuffer sb = new StringBuffer();
         
         String auth,val;
+        String lang = null;
         int conf=0;
     	if (count < defaults.length)
         {
              val = StringUtils.replaceEachRepeatedly(defaults[count].value,new String[]{"\"",MetadataValue.PARENT_PLACEHOLDER_VALUE},new String[]{"&quot;",""});
+             lang = defaults[count].language;
              auth = defaults[count].authority;
              conf = defaults[count].confidence;
         }
@@ -772,7 +775,14 @@
         }
         sb.append("<div class=\"row col-md-12\">\n");
         String fieldNameIdx = fieldName + ((repeatable && count != fieldCount-1)?"_" + (count+1):"");
-        sb.append("<div class=\"col-md-10\">");
+    
+        if (language)
+        {
+            sb.append("<div class=\"col-md-8\">");
+        }
+        else {
+            sb.append("<div class=\"col-md-10\">");
+        }
         if (authorityType != null)
         {
        	 sb.append("<div class=\"col-md-10\">");
@@ -785,6 +795,18 @@
           .append(val)
           .append("</textarea>")
           .append(doControlledVocabulary(fieldNameIdx, pageContext, vocabulary, readonly));
+    
+        if (language)
+        {
+            if (null == lang)
+            {
+                lang = ConfigurationManager.getProperty("default.language");
+            }
+            sb.append("<div class=\"col-md-2\">");
+            sb = doLanguageTag(sb, fieldName, count, fieldCount, repeatable, valueLanguageList, lang);
+            sb.append("</div>");
+        }
+        
         if (authorityType != null)
         {
        	 sb.append("</div><div class=\"col-md-2\">");
@@ -825,7 +847,7 @@
 
     void doNumber(javax.servlet.jsp.JspWriter out, Item item,
             String fieldName, String schema, String element, String qualifier, boolean repeatable, boolean required, boolean readonly,
-            int fieldCountIncr, String label, PageContext pageContext, int collectionID,List<DCInput> children,boolean hasParent)
+            int fieldCountIncr, String label, PageContext pageContext, int collectionID, boolean language, List<String> valueLanguageList, List<DCInput> children,boolean hasParent)
             throws java.io.IOException
     {
             
@@ -851,7 +873,7 @@
 	    	if(children !=null){
 	    	      int countChild = 1;
 		    	  for(DCInput child: children){
-		    		  sb.append(doChildInput(item,child, i, fieldCount, repeatable,readonly,fieldCountIncr, pageContext, collectionID, children.size()==countChild));
+		    		  sb.append(doChildInput(item,child, i, fieldCount, repeatable,readonly,fieldCountIncr, pageContext, collectionID, children.size()==countChild, language, valueLanguageList));
 		    		  countChild++;
 		    	  }
 	    	}
@@ -937,7 +959,8 @@
     
     void doOneBox(javax.servlet.jsp.JspWriter out, Item item,
       String fieldName, String schema, String element, String qualifier, boolean repeatable, boolean required, boolean readonly,
-      int fieldCountIncr, String label, PageContext pageContext, String vocabulary, boolean closedVocabulary, int collectionID,List<DCInput> children,boolean hasParent)
+      int fieldCountIncr, String label, PageContext pageContext, String vocabulary, boolean closedVocabulary, int collectionID,
+      boolean language, List<String> valueLanguageList, List<DCInput> children,boolean hasParent)
       throws java.io.IOException
     {
       StringBuffer sb = new StringBuffer();    	
@@ -956,11 +979,11 @@
           .append("</label>");
         sb.append("<div class=\"col-md-10\">");
     	  sb.append(doOneBoxInput(defaults,i, authorityType, fieldCount, fieldName,  schema,  element, qualifier, 
-    	    		 repeatable, required, readonly, fieldCountIncr, pageContext, vocabulary, closedVocabulary,collectionID,hasParent) );
+    	    		 repeatable, required, readonly, fieldCountIncr, pageContext, vocabulary, closedVocabulary,collectionID, language, valueLanguageList, hasParent) );
     	  if(children !=null){
     	      int countChild = 1;
 	    	  for(DCInput child: children){
-	    		  sb.append(doChildInput(item,child, i, fieldCount, repeatable,readonly,fieldCountIncr, pageContext, collectionID, children.size()==countChild));
+	    		  sb.append(doChildInput(item,child, i, fieldCount, repeatable,readonly,fieldCountIncr, pageContext, collectionID, children.size()==countChild, language, valueLanguageList));
 	    	  	  countChild++;
 	    	  }
     	  }
@@ -972,16 +995,20 @@
       out.write(sb.toString());
     }
     
-    StringBuffer doOneBoxInput( Metadatum[] defaults,int count,String authorityType,int fieldCount, String fieldName, String schema, String element, String qualifier, 
-    		boolean repeatable, boolean required, boolean readonly, int fieldCountIncr, PageContext pageContext,String vocabulary, boolean closedVocabulary,int collectionID,boolean hasParent){
+    StringBuffer doOneBoxInput( Metadatum[] defaults,int count,String authorityType,int fieldCount, String fieldName, String schema, String element, String qualifier,
+    		boolean repeatable, boolean required, boolean readonly, int fieldCountIncr, PageContext pageContext,String vocabulary, boolean closedVocabulary,
+            int collectionID, boolean language, List<String> valueLanguageList, boolean hasParent) {
 
     	StringBuffer sb = new StringBuffer();
         String val, auth;
+        String lang = null;
+        
         int conf= 0;
 
         if (count < defaults.length)
         {
           val = StringUtils.replaceEachRepeatedly(defaults[count].value,new String[]{"\"",MetadataValue.PARENT_PLACEHOLDER_VALUE},new String[]{"&quot;",""});
+          lang = defaults[count].language;
           auth = defaults[count].authority;
           conf = defaults[count].confidence;
         }
@@ -995,7 +1022,12 @@
         sb.append("<div class=\"row col-md-12\">");
         String fieldNameIdx = fieldName + ((repeatable && count != fieldCount-1)?"_" + (count+1):"");
         
-        sb.append("<div class=\"col-md-10\">");
+        if (language) {
+            sb.append("<div class=\"col-md-8\">");
+        } else {
+            sb.append("<div class=\"col-md-10\">");
+        }
+        
         if (authorityType != null)
         {
      	   sb.append("<div class=\"row col-md-10\">");
@@ -1009,6 +1041,15 @@
           .append("/>")
 			 .append(doControlledVocabulary(fieldNameIdx, pageContext, vocabulary, readonly))             
           .append("</div>");
+        
+        if (language) {
+            if (null == lang) {
+                lang = ConfigurationManager.getProperty("default.language");
+            }
+            sb.append("<div class=\"col-md-2\">");
+            sb = doLanguageTag(sb, fieldName, count, fieldCount, repeatable, valueLanguageList, lang);
+            sb.append("</div>");
+        }
         
         if (authorityType != null)
         {
@@ -1047,7 +1088,8 @@
 
     void doTwoBox(javax.servlet.jsp.JspWriter out, Item item,
       String fieldName, String schema, String element, String qualifier, boolean repeatable, boolean required, boolean readonly,
-      int fieldCountIncr, String label, PageContext pageContext, String vocabulary, boolean closedVocabulary,List<DCInput> children,boolean hasParent)
+      int fieldCountIncr, String label, PageContext pageContext, String vocabulary, boolean closedVocabulary, boolean language,
+      List<String> valueLanguageList, List<DCInput> children, boolean hasParent)
       throws java.io.IOException
     {
       Metadatum[] defaults = item.getMetadata(schema, element, qualifier, Item.ANY);
@@ -1081,8 +1123,8 @@
                  
          if (i < defaults.length)
          {
-           sb.append("<span class=\"col-md-4\"><input class=\"form-control\" type=\"text\" name=\"")
-             .append(fieldParam)
+           sb.append("<span class=\"col-md-").append(language ? "6" : "10")
+             .append("\"><input class=\"form-control\" type=\"text\" name=\"").append(fieldParam)
              .append("\" size=\"15\" value=\"")
              .append(defaults[i].value.replaceAll("\"", "&quot;"))
              .append("\"")
@@ -1091,6 +1133,17 @@
           
            sb.append(doControlledVocabulary(fieldParam, pageContext, vocabulary, readonly));
            sb.append("</span>");
+    
+          if (language) {
+            String lang = defaults[i].language;
+            if (null == lang) {
+                lang = ConfigurationManager.getProperty("default.language");
+            }
+            sb.append("<span class=\"col-md-4\">");
+            sb = doLanguageTag(sb, fieldName, i+1, fieldCount, repeatable, valueLanguageList, lang);
+            sb.append("</span>");
+          }
+          
           if (!readonly)
           {
                        sb.append("<button class=\"btn btn-danger col-md-2\" name=\"submit_")
@@ -1106,15 +1159,22 @@
           }
          }
          else
-         {
-           sb.append("<span class=\"col-md-4\"><input class=\"form-control\" type=\"text\" name=\"")
-             .append(fieldParam)
+         { sb.append("<span class=\"col-md-").append(language ? "6" : "10")
+             .append("\"><input class=\"form-control\" type=\"text\" name=\"").append(fieldParam)
              .append("\" size=\"15\"")
              .append((hasVocabulary(vocabulary)&&closedVocabulary) || readonly?" disabled=\"disabled\" ":"")
              .append("/>")
              .append(doControlledVocabulary(fieldParam, pageContext, vocabulary, readonly))
-             .append("</span>\n")
-             .append("<span class=\"col-md-2\">&nbsp;</span>");
+             .append("</span>\n");
+         
+           if (language) {
+             String lang = ConfigurationManager.getProperty("default.language");
+             sb.append("<span class=\"col-md-4\">");
+             sb = doLanguageTag(sb, fieldName, i+1, fieldCount, repeatable, valueLanguageList, lang);
+             sb.append("</span>");
+           }
+
+         sb.append("<span class=\"col-md-2\">&nbsp;</span>");
          }
          
          i++;
@@ -1503,6 +1563,27 @@
             
             out.write(sb.toString());
           }//end doList
+    
+    /** Display language tags **/
+    StringBuffer doLanguageTag(StringBuffer sb, String fieldName, int idx, int fieldCount, boolean repeatable,
+                               List<String> valueLanguageList, String lang)
+    {
+        // if this is not the only or last input, append index to input @names
+        String langName = fieldName + "_lang";
+        if (repeatable && idx != fieldCount-1)
+        {
+            langName += '_'+String.valueOf(idx+1);
+        }
+        sb.append("<select class=\"form-control\" name=\"").append(langName).append("\"").append(">");
+        for (int j = 0; j < valueLanguageList.size(); j += 2) {
+            String display = (String) valueLanguageList.get(j);
+            String value = (String) valueLanguageList.get(j + 1);
+            sb.append("<option ").append(value.equals(lang) ? " selected=\"selected\" " : "").append("value=\"")
+                    .append(value.replaceAll("\"", "&quot;")).append("\">").append(display).append("</option>");
+        }
+        sb.append("</select>");
+        return sb;
+    }
 %>
 
 <%
@@ -1654,6 +1735,7 @@
        String dcElement = inputs[z].getElement();
        String dcQualifier = inputs[z].getQualifier();
        String dcSchema = inputs[z].getSchema();
+       boolean language = inputs[z].getLanguage();
        
        String fieldName;
        int fieldCountIncr;
@@ -1744,7 +1826,7 @@
        if (inputType.equals("name"))
        {
            doPersonalName(out, item, fieldName, dcSchema, dcElement, dcQualifier,
-                                          repeatable, required, readonly, fieldCountIncr, label, pageContext, collectionID, parent2child.get(fieldName),hasParent);
+                                          repeatable, required, readonly, fieldCountIncr, label, pageContext, collectionID, language, inputs[z].getValueLanguageList(), parent2child.get(fieldName),hasParent);
        }
        else if (isSelectable(fieldName))
        {
@@ -1754,7 +1836,7 @@
        else if (inputType.equals("date"))
        {
            doDate(out, item, fieldName, dcSchema, dcElement, dcQualifier,
-                          repeatable, required, readonly, fieldCountIncr, label, pageContext, collectionID,parent2child.get(fieldName),hasParent);
+                          repeatable, required, readonly, fieldCountIncr, label, pageContext, collectionID, language, inputs[z].getValueLanguageList(), parent2child.get(fieldName),hasParent);
        }
        else if (inputType.equals("year")) 
        {
@@ -1769,7 +1851,7 @@
        else if (inputType.equals("number")) 
        {
     	   doNumber(out, item, fieldName, dcSchema, dcElement, dcQualifier,
-                   repeatable, required, readonly, fieldCountIncr, label, pageContext, collectionID,parent2child.get(fieldName),hasParent);
+                   repeatable, required, readonly, fieldCountIncr, label, pageContext, collectionID, language, inputs[z].getValueLanguageList(), parent2child.get(fieldName),hasParent);
        }
        else if (inputType.equals("series"))
        {
@@ -1785,7 +1867,7 @@
        {
                    doTextArea(out, item, fieldName, dcSchema, dcElement, dcQualifier,
                                   repeatable, required, readonly, fieldCountIncr, label, pageContext, vocabulary,
-                                  closedVocabulary, collectionID,parent2child.get(fieldName),hasParent);
+                                  closedVocabulary, collectionID, language, inputs[z].getValueLanguageList(), parent2child.get(fieldName),hasParent);
        }
        else if (inputType.equals("dropdown"))
        {
@@ -1796,7 +1878,7 @@
        {
                         doTwoBox(out, item, fieldName, dcSchema, dcElement, dcQualifier,
                                  repeatable, required, readonly, fieldCountIncr, label, pageContext, 
-                                 vocabulary, closedVocabulary,parent2child.get(fieldName),hasParent);
+                                 vocabulary, closedVocabulary, language, inputs[z].getValueLanguageList(), parent2child.get(fieldName),hasParent);
        }
        else if (inputType.equals("list"))
        {
@@ -1807,7 +1889,7 @@
        {
                         doOneBox(out, item, fieldName, dcSchema, dcElement, dcQualifier,
                                  repeatable, required, readonly, fieldCountIncr, label, pageContext, vocabulary,
-                                 closedVocabulary, collectionID, parent2child.get(fieldName),hasParent);
+                                 closedVocabulary, collectionID, language, inputs[z].getValueLanguageList(), parent2child.get(fieldName),hasParent);
        }
        
      } // end of 'for rows'

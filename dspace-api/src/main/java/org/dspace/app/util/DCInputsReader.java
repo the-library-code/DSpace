@@ -10,6 +10,7 @@ package org.dspace.app.util;
 import java.io.File;
 import java.util.*;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
@@ -442,6 +443,24 @@ public class DCInputsReader
                         {
                                 String closedVocabularyString = getAttribute(nd, "closed");
                             field.put("closedVocabulary", closedVocabularyString);
+                        }
+                        else if (tagName.equals("language"))
+                        {
+                            if (Boolean.valueOf(value))
+                            {
+                                String pairTypeName = getAttribute(nd, PAIR_TYPE_NAME);
+                                if (pairTypeName == null)
+                                {
+                                    throw new SAXException("Form " + formName + ", field " +
+                                            field.get("dc-element") +
+                                            "." + field.get("dc-qualifier") +
+                                            " has no language attribute");
+                                }
+                                else
+                                {
+                                    field.put(PAIR_TYPE_NAME, pairTypeName);
+                                }
+                            }
                         }
                 }
         }
