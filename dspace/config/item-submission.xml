@@ -188,10 +188,10 @@
     </step-definition>
 
     <!-- New step for show / mint identifiers -->
-    <step-definition id="mintidentifier">
+    <step-definition id="identifiers">
       <heading>submit.progressbar.ShowMintIdentifierStep</heading>
       <processing-class>org.dspace.app.rest.submit.step.ShowMintIdentifierStep</processing-class>
-      <type>mintidentifier</type>
+      <type>identifiers</type>
     </step-definition>
 
   </step-definitions>

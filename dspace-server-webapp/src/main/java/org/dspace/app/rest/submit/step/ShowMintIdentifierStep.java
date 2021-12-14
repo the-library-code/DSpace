@@ -13,7 +13,6 @@ import org.dspace.app.rest.submit.factory.PatchOperationFactory;
 import org.dspace.app.rest.submit.factory.impl.PatchOperation;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.app.util.SubmissionStepConfig;
-import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
