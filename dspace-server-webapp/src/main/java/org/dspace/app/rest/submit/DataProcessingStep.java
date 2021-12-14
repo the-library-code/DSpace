@@ -32,6 +32,9 @@ public interface DataProcessingStep extends RestProcessingStep {
     public static final String LICENSE_STEP_OPERATION_ENTRY = "granted";
     public static final String CCLICENSE_STEP_OPERATION_ENTRY = "cclicense/uri";
 
+    // Add new patch step reference for showing / minting DOIs
+    public static final String SHOW_MINT_IDENTIFIER_ENTRY = "mintidentifier";
+
     public static final String UPLOAD_STEP_METADATA_PATH = "metadata";
 
     /**

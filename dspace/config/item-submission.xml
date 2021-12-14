@@ -186,6 +186,14 @@
       <type>extract</type>
       <scope visibility="hidden" visibilityOutside="hidden">submission</scope>
     </step-definition>
+
+    <!-- New step for show / mint identifiers -->
+    <step-definition id="mintidentifier">
+      <heading>submit.progressbar.ShowMintIdentifierStep</heading>
+      <processing-class>org.dspace.app.rest.submit.step.ShowMintIdentifierStep</processing-class>
+      <type>mintidentifier</type>
+    </step-definition>
+
   </step-definitions>
   <submission-definitions>
     <submission-process name="product">
