@@ -44,4 +44,12 @@ public class DataIdentifiers implements SectionData {
         this.otherIdentifiers = otherIdentifiers;
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Handle: ").append(handle);
+        sb.append("DOI: ").append(doi);
+        sb.append("Others: ").append(String.join(", ", otherIdentifiers));
+        return sb.toString();
+    }
+
 }

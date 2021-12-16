@@ -70,6 +70,7 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
      * @return
      */
     private DataIdentifiers getIdentifierData(InProgressSubmission obj) {
+        log.debug("getIdentifierData() called");
         Context context = getContext();
         DataIdentifiers result = new DataIdentifiers();
         // Load identifier service
@@ -78,6 +79,15 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
         // Attempt to look up handle and DOI identifiers for this item
         String handle = identifierService.lookup(context, obj.getItem(), Handle.class);
         String doi = identifierService.lookup(context, obj.getItem(), DOI.class);
+
+        // Look up all identifiers and if they're not the DOI or handle, add them to the 'other' list
+        List<String> otherIdentifiers = new ArrayList<>();
+        for (String identifier : identifierService.lookup(context, obj.getItem())) {
+            if (!StringUtils.equals(doi, identifier) && !StringUtils.equals(handle, identifier)) {
+                otherIdentifiers.add(identifier);
+            }
+        }
+
         // If we got a DOI, format it to its external form
         if (StringUtils.isNotEmpty(doi)) {
             try {
@@ -86,16 +96,12 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
                 log.error("Error formatting DOI: " + doi);
             }
         }
-        // Look up all identifiers and if they're not the DOI or handle, add them to the 'other' list
-        List<String> otherIdentifiers = new ArrayList<>();
-        for (String identifier : identifierService.lookup(context, obj.getItem())) {
-            if (!StringUtils.equals(doi, identifier) && !StringUtils.equals(handle, identifier)) {
-                otherIdentifiers.add(identifier);
-            }
-        }
+
         result.setDoi(doi);
         result.setHandle(handle);
         result.setOtherIdentifiers(otherIdentifiers);
+
+        log.debug(result);
 
         return result;
     }
@@ -124,6 +130,7 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
 
     private void reserveIdentifier(Context context, InProgressSubmission obj) throws Exception {
         Item item = obj.getItem();
+        log.debug("reserveIdentifier called for item " + obj.getItem().getID());
         if (item == null) {
             log.error("Null item passed to reserve identifier action");
         }
