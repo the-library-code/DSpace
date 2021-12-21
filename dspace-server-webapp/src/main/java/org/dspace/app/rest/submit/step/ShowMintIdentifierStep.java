@@ -1,8 +1,10 @@
 package org.dspace.app.rest.submit.step;
 
-import javax.persistence.criteria.CriteriaBuilder;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.patch.Operation;
@@ -24,14 +26,13 @@ import org.dspace.identifier.factory.IdentifierServiceFactory;
 import org.dspace.identifier.service.IdentifierService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.services.model.Request;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
+ * Submission processing step to mint / reserve identifiers (if applicable) and return
+ * identifier data for use in the 'identifiers' submission section component in dspace-angular.
  *
- * Submission processing step to
+ * This method can be extended to allow (if authorised) an operation to be sent which will
+ * override an item filter and force reservation of an identifier.
  *
  * @author Kim Shepherd
  */
@@ -41,13 +42,11 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
 
     /**
      * Override DataProcessing.getData, return data identifiers from getIdentifierData()
-     * @param submissionService
-     *            the submission service
-     * @param obj
-     *            the in progress submission
-     * @param config
-     *            the submission step configuration
-     * @return
+     *
+     * @param submissionService The submission service
+     * @param obj               The workspace or workflow item
+     * @param config            The submission step configuration
+     * @return                  A simple DataIdentifiers bean containing doi, handle and list of other identifiers
      */
     @Override
     public DataIdentifiers getData(SubmissionService submissionService, InProgressSubmission obj,
@@ -69,8 +68,9 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
     /**
      * Get data about existing identifiers for this in-progress submission item - this method doesn't require
      * submissionService or step config, so can be more easily called from doPatchProcessing as well
-     * @param obj
-     * @return
+     *
+     * @param obj   The workspace or workflow item
+     * @return      A simple DataIdentifiers bean containing doi, handle and list of other identifiers
      */
     private DataIdentifiers getIdentifierData(InProgressSubmission obj) {
         log.debug("getIdentifierData() called");
@@ -100,17 +100,18 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
             }
         }
 
+        // Populate bean with data and return
         result.setDoi(doi);
         result.setHandle(handle);
         result.setOtherIdentifiers(otherIdentifiers);
-
         log.debug(result);
 
         return result;
     }
 
     /**
-     * TODO: THIS IS CURRENTLY NOT USED - ONLY NEEDED IF WE HAVE A BUTTON TO CLICK FOR FILTER OVERRIDE
+     * Process an operation sent to override the item filter and mint a DOI
+     * TODO: This is work in progress, needs authorisation checks applied
      */
     @Override
     public void doPatchProcessing(Context context, HttpServletRequest currentRequest,
@@ -132,6 +133,14 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
     }
 
 
+    /**
+     * Mint / reserve an identifier for later registration by the DOI organiser
+     * This method allows the filter to determine whether the item should actually get
+     * an identifier or not
+     * @param context   DSpace context
+     * @param obj       The workspace or workflow item
+     * @throws Exception
+     */
     private void reserveIdentifier(Context context, InProgressSubmission obj) throws Exception {
         Item item = obj.getItem();
         log.debug("reserveIdentifier called for item " + obj.getItem().getID());
@@ -149,6 +158,10 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
         }
     }
 
+    /**
+     * Utility method to get DSpace context from the HTTP request
+     * @return  DSpace context
+     */
     private Context getContext() {
         Context context = null;
         Request currentRequest = DSpaceServicesFactory.getInstance().getRequestService().getCurrentRequest();
