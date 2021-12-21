@@ -18,6 +18,7 @@ import org.dspace.app.util.SubmissionStepConfig;
 import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
+import org.dspace.handle.factory.HandleServiceFactory;
 import org.dspace.identifier.DOI;
 import org.dspace.identifier.Handle;
 import org.dspace.identifier.IdentifierException;
@@ -36,9 +37,9 @@ import org.dspace.services.model.Request;
  *
  * @author Kim Shepherd
  */
-public class ShowMintIdentifierStep extends AbstractProcessingStep {
+public class ShowIdentifiersStep extends AbstractProcessingStep {
 
-    private static final Logger log = LogManager.getLogger(ShowMintIdentifierStep.class);
+    private static final Logger log = LogManager.getLogger(ShowIdentifiersStep.class);
 
     /**
      * Override DataProcessing.getData, return data identifiers from getIdentifierData()
@@ -98,6 +99,10 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
             } catch (IdentifierException e) {
                 log.error("Error formatting DOI: " + doi);
             }
+        }
+        // If we got a handle, format it to its canonical form
+        if (StringUtils.isNotEmpty(handle)) {
+            handle = HandleServiceFactory.getInstance().getHandleService().getCanonicalForm(handle);
         }
 
         // Populate bean with data and return

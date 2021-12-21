@@ -190,7 +190,7 @@
     <!-- New step for show / mint identifiers -->
     <step-definition id="identifiers" mandatory="false">
       <heading>submission.sections.submit.progressbar.identifiers</heading>
-      <processing-class>org.dspace.app.rest.submit.step.ShowMintIdentifierStep</processing-class>
+      <processing-class>org.dspace.app.rest.submit.step.ShowIdentifiersStep</processing-class>
       <type>identifiers</type>
     </step-definition>
 
