@@ -31,6 +31,9 @@ import java.util.List;
 
 /**
  *
+ * Submission processing step to
+ *
+ * @author Kim Shepherd
  */
 public class ShowMintIdentifierStep extends AbstractProcessingStep {
 
@@ -127,6 +130,7 @@ public class ShowMintIdentifierStep extends AbstractProcessingStep {
             }
         }
     }
+
 
     private void reserveIdentifier(Context context, InProgressSubmission obj) throws Exception {
         Item item = obj.getItem();

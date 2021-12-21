@@ -188,8 +188,8 @@
     </step-definition>
 
     <!-- New step for show / mint identifiers -->
-    <step-definition id="identifiers">
-      <heading>submit.progressbar.ShowMintIdentifierStep</heading>
+    <step-definition id="identifiers" mandatory="false">
+      <heading>submission.sections.submit.progressbar.identifiers</heading>
       <processing-class>org.dspace.app.rest.submit.step.ShowMintIdentifierStep</processing-class>
       <type>identifiers</type>
     </step-definition>
@@ -250,6 +250,7 @@
     </submission-process>
     <submission-process name="publication">
       <step id="collection" />
+      <step id="identifiers" />
       <step id="extractionstep" />
       <step id="publication" />
       <step id="publication_indexing" />

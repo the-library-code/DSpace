@@ -16,6 +16,7 @@ import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
+import org.dspace.identifier.DOIIdentifierProvider;
 import org.dspace.identifier.IdentifierException;
 import org.dspace.identifier.doi.DOIIdentifierNotApplicableException;
 import org.dspace.identifier.factory.IdentifierServiceFactory;
@@ -27,6 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MintIdentifierPatchOperation extends PatchOperation<String> {
 
     private static final Logger log = LogManager.getLogger(MintIdentifierPatchOperation.class);
+
+    @Autowired
+    DOIIdentifierProvider provider;
 
     @Autowired
     ItemService itemService;
@@ -51,6 +55,7 @@ public class MintIdentifierPatchOperation extends PatchOperation<String> {
         try {
             // Try an ordinary reservation, obeying the filter if configured
             IdentifierServiceFactory.getInstance().getIdentifierService().reserve(context, item);
+
         } catch (DOIIdentifierNotApplicableException e) {
             // This is a non-fatal error - it just means the filter has been applied and this item should
             // not receive a DOI
