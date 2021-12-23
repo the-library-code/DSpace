@@ -7,23 +7,24 @@
  */
 package org.dspace.app.rest;
 
+import java.io.IOException;
+import java.sql.SQLException;
+
+import com.jayway.jsonpath.matchers.JsonPathMatchers;
+
 import org.dspace.app.rest.test.AbstractControllerIntegrationTest;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.builder.*;
+import org.dspace.builder.CollectionBuilder;
+import org.dspace.builder.CommunityBuilder;
+import org.dspace.builder.EPersonBuilder;
+import org.dspace.builder.WorkspaceItemBuilder;
 import org.dspace.content.Collection;
 import org.dspace.content.WorkspaceItem;
 import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.eperson.EPerson;
-import org.dspace.kernel.ServiceManager;
-import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.workflow.WorkflowItem;
-import org.dspace.xmlworkflow.storedcomponents.service.XmlWorkflowItemService;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.sql.SQLException;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,8 +41,6 @@ public class SubmissionShowIdentifiersRestIT extends AbstractControllerIntegrati
 
     @Autowired
     private WorkspaceItemService workspaceItemService;
-    @Autowired
-    private XmlWorkflowItemService workflowItemService;
 
     private Collection collection;
     private EPerson submitter;
@@ -49,7 +48,6 @@ public class SubmissionShowIdentifiersRestIT extends AbstractControllerIntegrati
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        ServiceManager serviceManager = DSpaceServicesFactory.getInstance().getServiceManager();
 
         context.turnOffAuthorisationSystem();
         parentCommunity = CommunityBuilder.createCommunity(context)
@@ -63,7 +61,7 @@ public class SubmissionShowIdentifiersRestIT extends AbstractControllerIntegrati
         collection = CollectionBuilder.createCollection(context, parentCommunity)
                                       .withName("Collection")
                                       .withEntityType("Publication")
-                                      .withSubmissionDefinition("publication")
+                                      .withSubmissionDefinition("traditional")
                                       .withSubmitterGroup(submitter).build();
 
         context.restoreAuthSystemState();
@@ -72,7 +70,6 @@ public class SubmissionShowIdentifiersRestIT extends AbstractControllerIntegrati
     @After
     public void after() throws SQLException, IOException, AuthorizeException {
         context.turnOffAuthorisationSystem();
-        workflowItemService.deleteByCollection(context, collection);
         workspaceItemService.findAll(context).forEach(this::deleteWorkspaceItem);
         context.restoreAuthSystemState();
     }
@@ -85,33 +82,29 @@ public class SubmissionShowIdentifiersRestIT extends AbstractControllerIntegrati
         }
     }
 
-
     @Test
-    public void testItemHandleAndDoiReservation() throws Exception {
+    public void testItemHandleReservation() throws Exception {
         // Test publication that should get Handle and DOI
         context.turnOffAuthorisationSystem();
         WorkspaceItem workspaceItem = createWorkspaceItem("Test publication", collection);
         context.restoreAuthSystemState();
         String submitterToken = getAuthToken(submitter.getEmail(), password);
-        getClient(submitterToken).perform(get("/api/workspace/workspaceitems/" + workspaceItem.getID()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.sections['identifiers'].doi", matchesPattern("^.*doi\\.org.$")))
-            .andExpect(jsonPath("$.sections['identifiers'].handle",
-                    containsString(workspaceItem.getItem().getHandle())));
+        getClient(submitterToken).perform(get("/api/submission/workspaceitems/" + workspaceItem.getID()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.sections.identifiers.handle").exists());
     }
 
     @Test
-    public void testItemHandleAndNoDoiReservation() throws Exception {
-        // Test publication that should get Handle but NOT a DOI
+    public void testItemDoiReservation() throws Exception {
+        // Test publication that should get Handle and DOI
         context.turnOffAuthorisationSystem();
         WorkspaceItem workspaceItem = createWorkspaceItem("Test publication", collection);
         context.restoreAuthSystemState();
+
         String submitterToken = getAuthToken(submitter.getEmail(), password);
-        getClient(submitterToken).perform(get("/api/workspace/workspaceitems/" + workspaceItem.getID()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.sections['identifiers'].doi", matchesPattern("^.*doi\\.org.$")))
-                .andExpect(jsonPath("$.sections['identifiers'].handle",
-                        containsString(workspaceItem.getItem().getHandle())));
+        getClient(submitterToken).perform(get("/api/submission/workspaceitems/" + workspaceItem.getID()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.sections.identifiers.doi").exists());
     }
 
     private WorkspaceItem createWorkspaceItem(String title, Collection collection) {

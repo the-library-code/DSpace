@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.app.rest.submit.step;
 
 import java.util.ArrayList;
@@ -11,8 +18,6 @@ import org.dspace.app.rest.model.patch.Operation;
 import org.dspace.app.rest.model.step.DataIdentifiers;
 import org.dspace.app.rest.submit.AbstractProcessingStep;
 import org.dspace.app.rest.submit.SubmissionService;
-import org.dspace.app.rest.submit.factory.PatchOperationFactory;
-import org.dspace.app.rest.submit.factory.impl.PatchOperation;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.app.util.SubmissionStepConfig;
 import org.dspace.content.InProgressSubmission;
@@ -115,30 +120,6 @@ public class ShowIdentifiersStep extends AbstractProcessingStep {
     }
 
     /**
-     * Process an operation sent to override the item filter and mint a DOI
-     * TODO: This is work in progress, needs authorisation checks applied
-     */
-    @Override
-    public void doPatchProcessing(Context context, HttpServletRequest currentRequest,
-                                  InProgressSubmission source, Operation op,
-                                  SubmissionStepConfig stepConf) throws Exception {
-        DataIdentifiers dataIdentifiers = getIdentifierData(source);
-        // If the REST path ends with /mintidentifier, perform the patch operation
-        if (op.getPath().endsWith(SHOW_MINT_IDENTIFIER_ENTRY)) {
-            if (StringUtils.isEmpty(dataIdentifiers.getDoi())) {
-                // No existing DOI, we can proceed
-                PatchOperation<String> patchOperation = new PatchOperationFactory()
-                        .instanceOf(SHOW_MINT_IDENTIFIER_ENTRY, op.getOp());
-                patchOperation.perform(context, currentRequest, source, op);
-            } else {
-                // We already have a DOI! Log error, ignore request
-                log.error("DOI requested but this item already has one: " + dataIdentifiers.getDoi());
-            }
-        }
-    }
-
-
-    /**
      * Mint / reserve an identifier for later registration by the DOI organiser
      * This method allows the filter to determine whether the item should actually get
      * an identifier or not
@@ -178,5 +159,24 @@ public class ShowIdentifiersStep extends AbstractProcessingStep {
         }
 
         return context;
+    }
+
+    /**
+     * This step is currently just for displaying identifiers and does not take additional patch operations
+     * @param context
+     *            the DSpace context
+     * @param currentRequest
+     *            the http request
+     * @param source
+     *            the in progress submission
+     * @param op
+     *            the json patch operation
+     * @param stepConf
+     * @throws Exception
+     */
+    @Override
+    public void doPatchProcessing(Context context, HttpServletRequest currentRequest, InProgressSubmission source,
+                                  Operation op, SubmissionStepConfig stepConf) throws Exception {
+        log.warn("Not implemented");
     }
 }
