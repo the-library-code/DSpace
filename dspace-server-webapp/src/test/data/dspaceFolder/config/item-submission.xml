@@ -163,8 +163,8 @@
         </step-definition>
 
         <!-- New step for show / mint identifiers -->
-        <step-definition id="identifiers" mandatory="true">
-            <heading>submission.sections.submit.progressbar.identifiers</heading>
+        <step-definition id="identifiers">
+            <heading>submit.progressbar.identifiers</heading>
             <processing-class>org.dspace.app.rest.submit.step.ShowIdentifiersStep</processing-class>
             <type>identifiers</type>
         </step-definition>

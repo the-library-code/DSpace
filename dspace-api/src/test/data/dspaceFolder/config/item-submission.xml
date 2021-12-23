@@ -124,8 +124,8 @@
         </step-definition>
 
         <!-- New step for show / mint identifiers -->
-        <step-definition id="identifiers" mandatory="true">
-            <heading>submission.sections.submit.progressbar.identifiers</heading>
+        <step-definition id="identifiers">
+            <heading>submit.progressbar.identifiers</heading>
             <processing-class>org.dspace.app.rest.submit.step.ShowIdentifiersStep</processing-class>
             <type>identifiers</type>
         </step-definition>
@@ -267,6 +267,8 @@
             <step id="upload"/>
             <!-- <step id="upload-with-embargo"/> -->
             <step id="detect-duplicate"/>
+            <!-- Test identifiers -->
+            <step id="identifiers" />
 
             <!--Step will be to Sign off on the License -->
             <step id="license"/>
@@ -300,6 +302,8 @@
 	      <step id="collection" />
 	      <step id="person" />
 	      <step id="detect-duplicate" />
+            <!-- Test identifiers -->
+            <step id="identifiers" />
 	      <step id="upload" />
 	      <step id="license" />
 	    </submission-process>
