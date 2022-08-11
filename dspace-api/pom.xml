@@ -891,6 +891,37 @@
             	</exclusion>
             </exclusions>
         </dependency>
+
+        <!-- New versions of citeproc / CSL artifacts -->
+        <!-- https://mvnrepository.com/artifact/de.undercouch/citeproc-java -->
+        <dependency>
+            <groupId>de.undercouch</groupId>
+            <artifactId>citeproc-java</artifactId>
+            <version>3.0.0-alpha.6</version>
+            <exclusions>
+                <!-- DSpace already uses a newer version of jbibtex than the version referenced in citeproc-java -->
+                <exclusion>
+                    <groupId>org.jbibtex</groupId>
+                    <artifactId>jbibtex</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.citationstyles/locales -->
+        <dependency>
+            <groupId>org.citationstyles</groupId>
+            <artifactId>locales</artifactId>
+            <version>22.7</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.citationstyles/styles -->
+        <dependency>
+            <groupId>org.citationstyles</groupId>
+            <artifactId>styles</artifactId>
+            <version>22.7</version>
+            <scope>runtime</scope>
+        </dependency>
+
+
     </dependencies>
 
     <dependencyManagement>

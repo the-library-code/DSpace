@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Copyright (c) 2002-2010, DuraSpace.  All rights reserved
+    Licensed under the DuraSpace License.
+    A copy of the DuraSpace License has been included in this
+    distribution and is available at: http://www.dspace.org/license
+-->
+
+<!-- The citation service uses the Citation Style Language
+     (www.citationstyles.org) to generate recommendations on how to cite an
+     item. The citation style language supports more than 9000 citation styles.
+     With in this file you can configure which citation styles shall be shown
+     on the JSPUI's display item page. -->
+
+<!-- TODO: come up with a good default configuration. See for examples https://aurimasv.github.io/z2csl/typeMap.xml,
+     https://citationstyles.org/developers/ and https://service.elsevier.com/app/answers/detail/a_id/22175/supporthub/mendeley/ -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+         http://www.springframework.org/schema/util
+          http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- We need a factory to create the citationService. -->
+    <bean id="citationServiceFactory" class="org.dspace.content.citation.CitationServiceFactoryImpl"/>
+
+    <!-- You can add further styles as values to the list.
+         This styles will appear on the display item page.
+         You can find styles on the official cls github page:
+         https://github.com/citation-style-language/styles-->
+    <bean id="org.dspace.content.citation.CitationService"
+          class="org.dspace.content.citation.CitationServiceImpl"
+          autowire="byType"
+          scope="singleton">
+        <property name="styles">
+            <util:list id="styles" value-type="java.lang.String">
+                <value>apa-6th-edition</value>
+                <value>ieee</value>
+                <value>elsevier-harvard</value>
+            </util:list>
+        </property>
+    </bean>
+
+    <!-- The DSpaceListItemDataProvide transfers the metadata of DSpace's items
+         to the processor of the citation style language. Therefore, this
+         configures the mapping between DSpace's metadata fields and the
+         metadata as it is used by CSL.
+         You'll have to adopt this to your local metadata schema. -->
+    <bean id="DSpaceListItemDataProvider" class="org.dspace.content.crosswalk.csl.DSpaceListItemDataProvider" scope="prototype">
+        <!-- the following types maps the values of dc.type to the CSL-Types.
+             CSL provides the types are:
+             ARTICLE, ARTICLE_JOURNAL, ARTICLE_MAGAZINE, ARTICLE_NEWSPAPER, BILL, BOOK, BROADCAST, CHAPTER, DATASET,
+             ENTRY, ENTRY_DICTIONARY, ENTRY_ENCYCLOPEDIA, FIGURE, GRAPHIC, INTERVIEW, LEGAL_CASE, LEGISLATION,
+             MANUSCRIPT, MAP, MOTION_PICTURE, MUSICAL_SCORE, PAMPHLET, PAPER_CONFERENCE, PATENT, PERSONAL_COMMUNICATION,
+             POST, POST_WEBLOG, REPORT, REVIEW, REVIEW_BOOK, SONG, SPEECH, THESIS, TREATY, WEBPAGE -->
+        <property name="CSLTypeMap">
+            <util:map id="CSLTypeMap">
+                <entry key="Default" value="#{T(de.undercouch.citeproc.csl.CSLType).ARTICLE_JOURNAL}"/>
+            </util:map>
+        </property>
+
+        <!-- the following properties define which metadata fields of DSpace are used for which CSL fields.
+             Only the csl field categories and the fields using person's names like author, editor, ... can contain
+             multiple values in CSL. If you use a list of dspace fields on CSL fields that do not allow multiple value,
+             we will use the first of the configured field that contains a value. -->
+        <!-- TODOS:
+          change all properties to use lists.
+          Add defaultType as fallback -->
+        <property name="defaultCSLType" value="#{T(de.undercouch.citeproc.csl.CSLType).ARTICLE_JOURNAL}"/>
+
+        <property name="type">
+            <util:list id="type" value-type="java.lang.String">
+                <value>dc.type</value>
+            </util:list>
+        </property>
+        <property name="title">
+            <util:list id="title" value-type="java.lang.String">
+                <value>dc.title</value>
+                <value>dc.title.alternative</value>
+            </util:list>
+        </property>
+        <property name="URL">
+            <util:list id="URL" value-type="java.lang.String">
+                <value>dc.identifier.uri</value>
+            </util:list>
+        </property>
+        <property name="issued">
+            <util:list id="issued" value-type="java.lang.String">
+                <value>dc.date.issued</value>
+            </util:list>
+        </property>
+        <property name="submitted">
+            <util:list id="submitted" value-type="java.lang.String">
+                <value>dc.date.submitted</value>
+            </util:list>
+        </property>
+        <property name="author">
+            <util:list id="author" value-type="java.lang.String">
+                <value>dc.contributor.author</value>
+                <value>dc.creator</value>
+            </util:list>
+        </property>
+        <property name="editor">
+            <util:list id="editor" value-type="java.lang.String">
+                <value>dc.contributor.editor</value>
+            </util:list>
+        </property>
+        <property name="publisher">
+            <util:list id="publisher" value-type="java.lang.String">
+                <value>dc.publisher</value>
+            </util:list>
+        </property>
+        <property name="illustrator">
+            <util:list id="illustrator" value-type="java.lang.String">
+                <value>dc.contributor.illustrator</value>
+            </util:list>
+        </property>
+        <property name="DOI">
+            <util:list id="DOI" value-type="java.lang.String">
+                <value>dc.identifier.doi</value>
+                <value>dc.identifier.uri</value>
+            </util:list>
+        </property>
+
+
+        <property name="abstrct">
+            <util:list id="abstrct" value-type="java.lang.String">
+                <value>dc.description.abstract</value>
+            </util:list>
+        </property>
+
+        <property name="version">
+            <util:list id="version" value-type="java.lang.String">
+                <value>dc.description.version</value>
+            </util:list>
+        </property>
+
+        <property name="ISBN">
+            <util:list id="ISBN" value-type="java.lang.String">
+                <value>dc.identifier.isbn</value>
+            </util:list>
+        </property>
+
+        <property name="ISSN">
+            <util:list id="ISSN" value-type="java.lang.String">
+                <value>dc.identifier.issn</value>
+            </util:list>
+        </property>
+
+        <property name="PMID">
+            <util:list id="PMID" value-type="java.lang.String">
+                <value>dc.identifier.pmid</value>
+            </util:list>
+        </property>
+
+        <property name="language">
+            <util:list id="language" value-type="java.lang.String">
+                <value>dc.language.iso</value>
+            </util:list>
+        </property>
+
+        <property name="page">
+            <util:list id="page" value-type="java.lang.String">
+                <value>fhnw.pagination</value>
+            </util:list>
+        </property>
+
+        <property name="volume">
+            <util:list id="volume" value-type="java.lang.String">
+                <value>dc.volume</value>
+            </util:list>
+        </property>
+
+        <property name="edition">
+            <util:list id="edition" value-type="java.lang.String">
+                <value>dc.edition</value>
+            </util:list>
+        </property>
+
+        <property name="issue">
+            <util:list id="issue" value-type="java.lang.String">
+                <value>dc.issue</value>
+            </util:list>
+        </property>
+
+        <property name="publisherPlace">
+            <util:list id="publisherPlace" value-type="java.lang.String">
+                <value>dc.spatial</value>
+            </util:list>
+        </property>
+
+        <property name="containerTitle">
+            <util:list id="containerTitle" value-type="java.lang.String">
+                <value>dc.relation.ispartof</value>
+            </util:list>
+        </property>
+
+        <property name="collectionEditor">
+            <util:list id="collectionEditor" value-type="java.lang.String">
+                <value>dc.contributor.editor</value>
+            </util:list>
+        </property>
+
+        <property name="collectionTitle">
+            <util:list id="collectionTitle" value-type="java.lang.String">
+                <value>dc.relation.ispartofseries</value>
+            </util:list>
+        </property>
+
+        <property name="event">
+            <util:list id="event" value-type="java.lang.String">
+                <value>dc.event</value>
+            </util:list>
+        </property>
+
+    </bean>
+
+</beans>
