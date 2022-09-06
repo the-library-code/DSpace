@@ -60,18 +60,18 @@
              POST, POST_WEBLOG, REPORT, REVIEW, REVIEW_BOOK, SONG, SPEECH, THESIS, TREATY, WEBPAGE -->
         <property name="CSLTypeMap">
             <util:map id="CSLTypeMap">
-                <entry key="00 - Projekt" value="#{T(de.undercouch.citeproc.csl.CSLType).REPORT}"/>
-                <entry key="01 - Zeitschriftenartikel, Journalartikel oder Magazin" value="#{T(de.undercouch.citeproc.csl.CSLType).ARTICLE_JOURNAL}"/>
-                <entry key="02 - Monographie" value="#{T(de.undercouch.citeproc.csl.CSLType).BOOK}"/>
-                <entry key="03 - Sammelband" value="#{T(de.undercouch.citeproc.csl.CSLType).BOOK}"/>
-                <entry key="04 - Beitrag Sammelband oder Konferenzschrift" value="#{T(de.undercouch.citeproc.csl.CSLType).PAPER_CONFERENCE}" />
-                <entry key="05 - Forschungs- oder Arbeitsbericht" value="#{T(de.undercouch.citeproc.csl.CSLType).REPORT}"/>
-                <entry key="06 - Präsentation" value="#{T(de.undercouch.citeproc.csl.CSLType).SPEECH}"/>
-                <entry key="07 - Konzert/ Audio- oder Videomaterial" value="#{T(de.undercouch.citeproc.csl.CSLType).SONG}"/>
-                <entry key="09 - Software" value="#{T(de.undercouch.citeproc.csl.CSLType).DATASET}"/>
-                <entry key="10 - Elektronische-/ Webpublikation" value="#{T(de.undercouch.citeproc.csl.CSLType).POST}"/>
-                <entry key="11 - Studentische Arbeit" value="#{T(de.undercouch.citeproc.csl.CSLType).THESIS}"/>
-                <entry key="12 - Patent" value="#{T(de.undercouch.citeproc.csl.CSLType).PATENT}"/>
+                <entry key="Technical Report" value="#{T(de.undercouch.citeproc.csl.CSLType).REPORT}"/>
+                <entry key="Article" value="#{T(de.undercouch.citeproc.csl.CSLType).ARTICLE_JOURNAL}"/>
+                <entry key="Book" value="#{T(de.undercouch.citeproc.csl.CSLType).BOOK}"/>
+                <entry key="Book Chapter" value="#{T(de.undercouch.citeproc.csl.CSLType).CHAPTER}"/>
+                <entry key="Presentation" value="#{T(de.undercouch.citeproc.csl.CSLType).PAPER_CONFERENCE}" />
+                <entry key="Working Paper" value="#{T(de.undercouch.citeproc.csl.CSLType).REPORT}"/>
+                <entry key="Recording, oral" value="#{T(de.undercouch.citeproc.csl.CSLType).SPEECH}"/>
+                <entry key="Recording, musical" value="#{T(de.undercouch.citeproc.csl.CSLType).SONG}"/>
+                <entry key="Software" value="#{T(de.undercouch.citeproc.csl.CSLType).DATASET}"/>
+                <entry key="Dataset" value="#{T(de.undercouch.citeproc.csl.CSLType).DATASET}"/>
+                <entry key="Thesis" value="#{T(de.undercouch.citeproc.csl.CSLType).THESIS}"/>
+                <entry key="Patent" value="#{T(de.undercouch.citeproc.csl.CSLType).PATENT}"/>
                 <entry key="Default" value="#{T(de.undercouch.citeproc.csl.CSLType).ARTICLE_JOURNAL}"/>
             </util:map>
         </property>
@@ -178,31 +178,31 @@
 
         <property name="page">
             <util:list id="page" value-type="java.lang.String">
-                <value>fhnw.pagination</value>
+                <value>dc.format.extent</value>
             </util:list>
         </property>
 
         <property name="volume">
             <util:list id="volume" value-type="java.lang.String">
-                <value>dc.volume</value>
+                <value>publicationvolume.volumeNumber</value>
             </util:list>
         </property>
 
         <property name="edition">
             <util:list id="edition" value-type="java.lang.String">
-                <value>dc.edition</value>
+                <value>oaire.citation.edition</value>
             </util:list>
         </property>
 
         <property name="issue">
             <util:list id="issue" value-type="java.lang.String">
-                <value>dc.issue</value>
+                <value>publicationissue.issueNumber</value>
             </util:list>
         </property>
 
         <property name="publisherPlace">
             <util:list id="publisherPlace" value-type="java.lang.String">
-                <value>dc.spatial</value>
+                <value>dcterms.spatial</value>
             </util:list>
         </property>
 
@@ -226,12 +226,13 @@
 
         <property name="event">
             <util:list id="event" value-type="java.lang.String">
-                <value>dc.event</value>
+                <value>oaire.citation.conferencePlace</value>
             </util:list>
         </property>
 
 
-
+        <!-- Below are possible terms used in CSL citations. Ideally we'll have all possibilities mapped
+             to DSpace metadata fields: -->
 
         <!--        <property name="genre" value=""/>-->
         <!--        <property name="keyword" value=""/>-->
