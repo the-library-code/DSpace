@@ -59,9 +59,7 @@ import org.dspace.content.service.ItemService;
 import org.dspace.content.service.MetadataSchemaService;
 import org.dspace.content.service.RelationshipService;
 import org.dspace.content.service.WorkspaceItemService;
-import org.dspace.content.template.TemplateItemValueService;
 import org.dspace.content.virtual.VirtualMetadataPopulator;
-import org.dspace.content.vo.MetadataValueVO;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.LogHelper;
@@ -318,7 +316,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
             Optional<Bitstream> primaryBitstream = bundles.get(0).getBitstreams().stream().filter(bitstream -> {
                 return bitstream.getMetadata().stream().anyMatch(metadataValue -> {
                     if (metadataField != null) {
-                        return metadataValue.getMetadataField().getID() == metadataField.getID()
+                        return metadataValue.getMetadataField().getID().equals(metadataField.getID())
                             && metadataValue.getValue() != null
                             && metadataValue.getValue().equalsIgnoreCase(value);
                     } else {
