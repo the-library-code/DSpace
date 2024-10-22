@@ -14,10 +14,12 @@ import org.dspace.app.rest.authorization.AuthorizationFeatureDocumentation;
 import org.dspace.app.rest.model.BaseObjectRest;
 import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.model.SiteRest;
+import org.dspace.app.rest.model.WorkspaceItemRest;
 import org.dspace.app.rest.utils.Utils;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
+import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.discovery.SearchServiceException;
@@ -33,6 +35,8 @@ public class EditItemFeature implements AuthorizationFeature {
     AuthorizeService authService;
     @Autowired
     ItemService itemService;
+    @Autowired
+    WorkspaceItemService wis;
 
     @Autowired
     Utils utils;
@@ -41,8 +45,15 @@ public class EditItemFeature implements AuthorizationFeature {
     public boolean isAuthorized(Context context, BaseObjectRest object) throws SQLException, SearchServiceException {
         if (object instanceof SiteRest) {
             return itemService.countItemsWithEdit(context) > 0;
-        } else if (object instanceof ItemRest) {
-            Item item = (Item) utils.getDSpaceAPIObjectFromRest(context, object);
+        } else if (object instanceof ItemRest || object instanceof WorkspaceItemRest) {
+            Item item;
+
+            if (object instanceof ItemRest) {
+                item = (Item) utils.getDSpaceAPIObjectFromRest(context, object);
+            } else {
+                item = wis.find(context, ((WorkspaceItemRest) object).getId()).getItem();
+            }
+
             return authService.authorizeActionBoolean(context, item, Constants.WRITE);
         }
         return false;
@@ -52,7 +63,8 @@ public class EditItemFeature implements AuthorizationFeature {
     public String[] getSupportedTypes() {
         return new String[] {
             ItemRest.CATEGORY + "." + ItemRest.NAME,
-            SiteRest.CATEGORY + "." + SiteRest.NAME
+            SiteRest.CATEGORY + "." + SiteRest.NAME,
+            WorkspaceItemRest.CATEGORY + "." + WorkspaceItemRest.NAME
         };
     }
 }
