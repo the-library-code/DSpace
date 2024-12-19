@@ -30,8 +30,8 @@ public class RorOrgUnitAuthorityIT extends AbstractControllerIntegrationTest {
         expectedExtras.put("ror_orgunit_id", "https://ror.org/02z02cv32");
         expectedExtras.put("data-ror_orgunit_type", "Nonprofit");
         expectedExtras.put("ror_orgunit_type", "Nonprofit");
-        expectedExtras.put("data-ror_orgunit_acronym", "WEICan, IEEC");
-        expectedExtras.put("ror_orgunit_acronym", "WEICan, IEEC");
+        expectedExtras.put("data-ror_orgunit_acronym", "IEEC, WEICan");
+        expectedExtras.put("ror_orgunit_acronym", "IEEC, WEICan");
         expectedExtras.put("data-ror_orgunit_country", "CA");
         expectedExtras.put("data-ror_orgunit_countryName", "CA");
         expectedExtras.put("ror_orgunit_countryName", "CA");
