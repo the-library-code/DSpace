@@ -32,7 +32,7 @@ import org.dspace.app.rest.RestResourceController;
                 method = "getWorkflowItemCollection"
         )
 })
-public class WorkflowItemRest extends AInprogressSubmissionRest {
+public class WorkflowItemRest extends AInprogressSubmissionRest<Integer> {
     public static final String NAME = "workflowitem";
     public static final String CATEGORY = RestAddressableModel.WORKFLOW;
 
