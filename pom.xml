@@ -420,6 +420,11 @@
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>0.8.11</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -1153,7 +1158,6 @@
                 <module>dspace-sword</module>
             </modules>
         </profile>
-
 
         <!--
            Builds SWORDv2 extension for DSpace
