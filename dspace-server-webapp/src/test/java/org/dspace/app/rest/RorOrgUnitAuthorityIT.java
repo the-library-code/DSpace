@@ -85,10 +85,10 @@ public class RorOrgUnitAuthorityIT extends AbstractControllerIntegrationTest {
     @Test
     public void testAuthority() throws Exception {
 
-        configurationService.setProperty(
-            "plugin.named.org.dspace.content.authority.ChoiceAuthority",
-            new String[] {ROR_ORGUNIT_AUTHORITY}
-        );
+//        configurationService.setProperty(
+//            "plugin.named.org.dspace.content.authority.ChoiceAuthority",
+//            new String[] {ROR_ORGUNIT_AUTHORITY}
+//        );
 
         configurationService.setProperty("cris.RorOrgUnitAuthority.country.display", "false");
         configurationService.setProperty("cris.ItemAuthority.OrgUnitAuthority.source", "ror");
