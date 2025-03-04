@@ -89,7 +89,8 @@ public class RorOrgUnitAuthorityIT extends AbstractControllerIntegrationTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    @Override
+    public void destroy() throws Exception {
         super.destroy();
         pluginService.clearNamedPluginClasses();
         choiceAuthorityService.clearCache();
