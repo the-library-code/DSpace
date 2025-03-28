@@ -75,7 +75,7 @@ public class OrcidQueueConsumer implements Consumer {
 
     private ConfigurationService configurationService;
 
-    private Set<UUID> itemsToConsume = new HashSet<>();
+    private final Set<UUID> itemsToConsume = new HashSet<>();
 
     @Override
     public void initialize() throws Exception {
@@ -131,6 +131,9 @@ public class OrcidQueueConsumer implements Consumer {
         itemsToConsume.clear();
     }
 
+    /**
+     * Consume the item if it is a profile or an ORCID entity.
+     */
     private void consumeItem(Context context, Item item) throws SQLException {
 
         String entityType = itemService.getEntityTypeLabel(item);
@@ -317,7 +320,7 @@ public class OrcidQueueConsumer implements Consumer {
         try {
             return !itemService.isLatestVersion(context, entity);
         } catch (SQLException e) {
-            throw new SQLRuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
