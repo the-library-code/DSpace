@@ -31,7 +31,6 @@ import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.core.CrisConstants;
-import org.dspace.core.exception.SQLRuntimeException;
 import org.dspace.event.Consumer;
 import org.dspace.event.Event;
 import org.dspace.orcid.OrcidHistory;
