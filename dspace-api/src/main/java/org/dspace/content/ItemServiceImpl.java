@@ -190,28 +190,26 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
     @Autowired(required = true)
     private OrcidSynchronizationService orcidSynchronizationService;
 
-    @Autowired
-    private CrisLayoutTabService crisLayoutTabService;
+    @Autowired(required = true)
+    private ResearcherProfileService researcherProfileService;
+
+    @Autowired(required = true)
+    private RequestItemService requestItemService;
 
     @Autowired(required = true)
     protected SubscribeService subscribeService;
 
+    @Autowired
+    private VersionHistoryService versionHistoryService;
+
+    @Autowired
+    private CrisLayoutTabService crisLayoutTabService;
+
     @Autowired(required = true)
     protected CrisMetricsService crisMetricsService;
 
-    @Autowired(required = true)
-    private ResearcherProfileService researcherProfileService;
-    @Autowired(required = true)
-    private RequestItemService requestItemService;
-
-    @Autowired
-    private VersionHistoryService versionHistoryService;
-
     @Autowired
     private List<ItemSearcherByMetadata> itemSearcherByMetadata;
-
-    @Autowired
-    private VersionHistoryService versionHistoryService;
 
     protected ItemServiceImpl() {
         super();
@@ -322,7 +320,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
             Optional<Bitstream> primaryBitstream = bundles.get(0).getBitstreams().stream().filter(bitstream -> {
                 return bitstream.getMetadata().stream().anyMatch(metadataValue -> {
                     if (metadataField != null) {
-                        return metadataValue.getMetadataField().getID() == metadataField.getID()
+                        return metadataValue.getMetadataField().getID().equals(metadataField.getID())
                             && metadataValue.getValue() != null
                             && metadataValue.getValue().equalsIgnoreCase(value);
                     } else {

@@ -7,10 +7,6 @@
  */
 package org.dspace.identifier.doi;
 
-import static org.dspace.identifier.DOIIdentifierProvider.DOI_ELEMENT;
-import static org.dspace.identifier.DOIIdentifierProvider.DOI_QUALIFIER;
-import static org.dspace.identifier.DOIIdentifierProvider.MD_SCHEMA;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
