@@ -304,9 +304,29 @@ public class CommunityServiceImpl extends DSpaceObjectServiceImpl<Community> imp
         // register this as the admin group
         community.setAdmins(admins);
         context.addEvent(new Event(Event.MODIFY, Constants.COMMUNITY, community.getID(),
-                                             null, getIdentifiers(context, community)));
+                                   null, getIdentifiers(context, community)));
+
+        List<Collection> allCollections = getAllCollectionsInHierarchy(community);
+
+        allCollections.forEach(c -> {
+            context.addEvent(new Event(Event.MODIFY, Constants.COLLECTION,
+                                       c.getID(), c.getHandle(),
+                                       collectionService.getIdentifiers(context, c)));
+        });
         return admins;
     }
+
+    private static List<Collection> getAllCollectionsInHierarchy(Community community) {
+
+        List<Collection> collections = new ArrayList<>(community.getCollections());
+
+        for (Community subCommunity : community.getSubcommunities()) {
+            collections.addAll(getAllCollectionsInHierarchy(subCommunity));
+        }
+
+        return collections;
+    }
+
 
     @Override
     public void removeAdministrators(Context context, Community community) throws SQLException, AuthorizeException {
