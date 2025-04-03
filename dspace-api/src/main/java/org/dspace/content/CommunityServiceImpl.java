@@ -315,9 +315,9 @@ public class CommunityServiceImpl extends DSpaceObjectServiceImpl<Community> imp
         context.addEvent(new Event(Event.MODIFY, Constants.COMMUNITY, community.getID(),
                                    null, getIdentifiers(context, community)));
 
-        List<Community> allCollections = getAllCommunitiesInHierarchy(community);
+        List<Community> parentCommunities = getAllCommunitiesInHierarchy(community);
 
-        List<Collection> collToUpdate = getCollectionsWithoutSubmit(context, allCollections);
+        List<Collection> collToUpdate = getCollectionsWithoutSubmit(context, parentCommunities);
 
         collToUpdate.forEach(c -> {
             context.addEvent(new Event(Event.MODIFY, Constants.COLLECTION,
