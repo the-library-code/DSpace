@@ -88,6 +88,14 @@ public class OrcidSynchronizationServiceImpl implements OrcidSynchronizationServ
     @Autowired
     private OrcidClient orcidClient;
 
+    public OrcidClient getOrcidClient() {
+        return orcidClient;
+    }
+
+    public void setOrcidClient(OrcidClient orcidClient) {
+        this.orcidClient = orcidClient;
+    }
+
     @Override
     public void linkProfile(Context context, Item profile, OrcidTokenResponseDTO token) throws SQLException {
 
