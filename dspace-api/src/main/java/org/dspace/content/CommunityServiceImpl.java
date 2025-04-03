@@ -344,7 +344,6 @@ public class CommunityServiceImpl extends DSpaceObjectServiceImpl<Community> imp
         if (!parentFilter.isEmpty()) {
             query.addFilterQueries("location.parent:(" + parentFilter + ")");
         }
-        query.addSearchField("handle");
 
         try {
             // Extract collection IDs
