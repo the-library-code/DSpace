@@ -260,7 +260,7 @@ public class SubmissionConfigReader {
         if (submitName == null) {
             submitName = collectionToSubmissionConfig
                 .get(DEFAULT_COLLECTION);
-                        }
+        }
         if (submitName == null) {
             throw new IllegalStateException(
                 "No item submission process configuration designated as 'default' in 'submission-map' section of " +

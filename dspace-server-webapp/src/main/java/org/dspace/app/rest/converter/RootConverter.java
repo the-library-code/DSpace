@@ -36,7 +36,7 @@ public class RootConverter {
         if (!dspaceUrl.equals(dspaceSSRUrl) && StringUtils.isNotBlank(dspaceSSRUrl)
             && requestUrl.startsWith(dspaceSSRUrl)) {
             rootRest.setDspaceServer(dspaceSSRUrl);
-        }else {
+        } else {
             rootRest.setDspaceServer(dspaceUrl);
         }
         rootRest.setDspaceVersion(CrisConstants.DSPACE_BASE_VERSION);
