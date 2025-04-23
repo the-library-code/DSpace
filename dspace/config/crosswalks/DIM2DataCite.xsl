@@ -45,6 +45,10 @@
     <xsl:param name="mdElement">identifier</xsl:param>
     <xsl:param name="mdQualifier">uri</xsl:param>
     <xsl:variable name="placeholder">#PLACEHOLDER_PARENT_METADATA_VALUE#</xsl:variable>
+    <!-- Metadata-field to retrieve DOI from items -->
+    <xsl:param name="mdSchema">dc</xsl:param>
+    <xsl:param name="mdElement">identifier</xsl:param>
+    <xsl:param name="mdQualifier">uri</xsl:param>
 
     <xsl:output method="xml" indent="yes" encoding="utf-8" />
 

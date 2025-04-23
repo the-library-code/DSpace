@@ -314,9 +314,7 @@ public class StructBuilderIT
      * @throws org.dspace.authorize.AuthorizeException passed through.
      */
     @Test
-    public void testExportStructure()
-            throws ParserConfigurationException, IOException,
-            SQLException, AuthorizeException {
+    public void testExportStructure() throws SQLException, AuthorizeException {
         // Create some structure to test.
         context.turnOffAuthorisationSystem();
         // Top level community

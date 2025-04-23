@@ -17,7 +17,6 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.RESTAuthorizationException;
 import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
@@ -48,8 +47,6 @@ import org.springframework.web.multipart.MultipartFile;
 public abstract class DSpaceRestRepository<T extends RestAddressableModel, ID extends Serializable>
     extends AbstractDSpaceRestRepository
     implements CrudRepository<T, ID>, PagingAndSortingRepository<T, ID>, BeanNameAware {
-
-    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(DSpaceRestRepository.class);
 
     private String thisRepositoryBeanName;
     private DSpaceRestRepository<T, ID> thisRepository;

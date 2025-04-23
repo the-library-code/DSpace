@@ -14,6 +14,7 @@ import org.dspace.builder.CommunityBuilder;
 import org.dspace.builder.ItemBuilder;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
+import org.dspace.content.authority.factory.ContentAuthorityServiceFactory;
 import org.dspace.core.factory.CoreServiceFactory;
 import org.dspace.curate.Curator;
 import org.dspace.identifier.AbstractIdentifierProviderIT;
@@ -44,6 +45,7 @@ public class CreateMissingIdentifiersIT
             throws Exception {
         // Must remove any cached named plugins before creating a new one
         CoreServiceFactory.getInstance().getPluginService().clearNamedPluginClasses();
+        ContentAuthorityServiceFactory.getInstance().getChoiceAuthorityService().clearCache();
         // Define a new task dynamically
         configurationService.setProperty(P_TASK_DEF,
                 CreateMissingIdentifiers.class.getCanonicalName() + " = " + TASK_NAME);

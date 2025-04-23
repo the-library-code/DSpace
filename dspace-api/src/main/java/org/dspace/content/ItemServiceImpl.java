@@ -195,6 +195,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
     @Autowired(required = true)
     private ResearcherProfileService researcherProfileService;
+
     @Autowired(required = true)
     private RequestItemService requestItemService;
 

@@ -598,8 +598,8 @@ public class ItemTest extends AbstractDSpaceObjectTest {
         //by default has no authority
 
         String schema = "dc";
-        String element = "contributor";
-        String qualifier = "author";
+        String element = "date";
+        String qualifier = "issued";
         String lang = null;
         List<String> values = Arrays.asList("value0", "value1");
         List<Integer> confidences = Arrays.asList(0, 0);
