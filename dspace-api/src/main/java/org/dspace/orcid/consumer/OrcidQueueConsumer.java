@@ -139,6 +139,9 @@ public class OrcidQueueConsumer implements Consumer {
         itemsToConsume.clear();
     }
 
+    /**
+     * Consume the item if it is a profile or an ORCID entity.
+     */
     private void consumeItem(Context context, Item item) throws SQLException {
 
         String entityType = itemService.getEntityTypeLabel(item);

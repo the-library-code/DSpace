@@ -1090,6 +1090,78 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 }
 
                 //Resolve our facet field values
+                resolveFacetFields(context, query, result, zombieFound, solrQueryResponse);
+                //Add total entries count for metadata browsing
+                resolveEntriesCount(result, solrQueryResponse);
+            }
+
+            if (solrQueryResponse.getFacetPivot() != null && !zombieFound) {
+                NamedList<List<PivotField>> facetPivotList = solrQueryResponse.getFacetPivot();
+                for (String facetPivot : query.getFacetPivots()) {
+                    result.addFacetPivotResult(facetPivot, fromPivotFields(facetPivotList.get(facetPivot)));
+                }
+            }
+
+            // If any stale entries are found in the current page of results,
+            // we remove those stale entries and rerun the same query again.
+            // Otherwise, the query is valid and the results are returned.
+            if (!zombieDocs.isEmpty()) {
+                log.info("Cleaning " + zombieDocs.size() + " stale objects from Discovery Index");
+                log.info("ZombieDocs ");
+                zombieDocs.forEach(log::info);
+                solrSearchCore.getSolr().deleteById(zombieDocs);
+                solrSearchCore.getSolr().commit();
+            } else {
+                valid = true;
+            }
+        } while (!valid && executionCount <= maxAttempts);
+
+        if (!valid && executionCount == maxAttempts) {
+            String message = "The Discovery (Solr) index has a large number of stale entries,"
+                    + " and we could not complete this request. Please reindex all content"
+                    + " to remove these stale entries (e.g. dspace index-discovery -f).";
+            log.fatal(message);
+            throw new RuntimeException(message);
+        }
+        return result;
+    }
+
+    /**
+     * Stores the total count of entries for metadata index browsing. The count is calculated by the
+     * <code>json.facet</code> parameter with the following value:
+     *
+     * <pre><code>
+     * {
+     *     "entries_count": {
+     *         "type": "terms",
+     *         "field": "facetNameField_filter",
+     *         "limit": 0,
+     *         "prefix": "prefix_value",
+     *         "numBuckets": true
+     *     }
+     * }
+     * </code></pre>
+     *
+     * This value is returned in the <code>facets</code> field of the Solr response.
+     *
+     * @param result DiscoverResult object where the total entries count will be stored
+     * @param solrQueryResponse QueryResponse object containing the solr response
+     */
+    private void resolveEntriesCount(DiscoverResult result, QueryResponse solrQueryResponse) {
+
+        Object facetsObj = solrQueryResponse.getResponse().get("facets");
+        if (facetsObj instanceof NamedList) {
+            NamedList<Object> facets = (NamedList<Object>) facetsObj;
+            Object bucketsInfoObj = facets.get("entries_count");
+            if (bucketsInfoObj instanceof NamedList) {
+                NamedList<Object> bucketsInfo = (NamedList<Object>) bucketsInfoObj;
+                result.setTotalEntries((int) bucketsInfo.get("numBuckets"));
+            }
+        }
+    }
+
+    private void resolveFacetFields(Context context, DiscoverQuery query, DiscoverResult result,
+            boolean zombieFound, QueryResponse solrQueryResponse) throws SQLException {
                 List<FacetField> facetFields = solrQueryResponse.getFacetFields();
                 if (facetFields != null && !zombieFound) {
                     for (int i = 0; i < facetFields.size(); i++) {
@@ -1250,35 +1322,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                     }
                 }
             }
-
-            if (solrQueryResponse.getFacetPivot() != null && !zombieFound) {
-                NamedList<List<PivotField>> facetPivotList = solrQueryResponse.getFacetPivot();
-                for (String facetPivot : query.getFacetPivots()) {
-                    result.addFacetPivotResult(facetPivot, fromPivotFields(facetPivotList.get(facetPivot)));
-                }
-            }
-
-            // If any stale entries are found in the current page of results,
-            // we remove those stale entries and rerun the same query again.
-            // Otherwise, the query is valid and the results are returned.
-            if (!zombieDocs.isEmpty()) {
-                log.info("Cleaning " + zombieDocs.size() + " stale objects from Discovery Index");
-                solrSearchCore.getSolr().deleteById(zombieDocs);
-                solrSearchCore.getSolr().commit();
-            } else {
-                valid = true;
-            }
-        } while (!valid && executionCount <= maxAttempts);
-
-        if (!valid && executionCount == maxAttempts) {
-            String message = "The Discovery (Solr) index has a large number of stale entries,"
-                    + " and we could not complete this request. Please reindex all content"
-                    + " to remove these stale entries (e.g. dspace index-discovery -f).";
-            log.fatal(message);
-            throw new RuntimeException(message);
-        }
-        return result;
-    }
 
     /**
      * Find the indexable object by type and UUID
@@ -1526,8 +1569,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             } else {
                 return field + "_acid";
             }
-        } else if (facetFieldConfig.getType().equals(DiscoveryConfigurationParameters.TYPE_STANDARD)) {
-            return field;
         } else if (StringUtils.startsWith(facetFieldConfig.getType(), GraphDiscoverSearchFilterFacet.TYPE_PREFIX)) {
             if (removePostfix) {
                 return field.lastIndexOf("_filter") != -1 ? field.substring(0, field.lastIndexOf("_filter")) : field;

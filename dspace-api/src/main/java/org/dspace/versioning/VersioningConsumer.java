@@ -147,7 +147,7 @@ public class VersioningConsumer implements Consumer {
 
         // unarchive previous item
         unarchiveItem(ctx, previousItem);
-
+        // handles versions for ORCID publications waiting to be shipped, or already published (history-queue).
         handleOrcidSynchronization(ctx, previousItem, latestItem);
 
         updateDuplicateDetection(ctx, latestItem, previousItem);

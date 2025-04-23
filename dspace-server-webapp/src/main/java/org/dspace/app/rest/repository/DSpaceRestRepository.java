@@ -26,7 +26,6 @@ import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.model.RestAddressableModel;
 import org.dspace.app.rest.model.patch.Patch;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.service.MetadataFieldService;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +56,6 @@ public abstract class DSpaceRestRepository<T extends RestAddressableModel, ID ex
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    @Autowired
-    private MetadataFieldService metadataFieldService;
 
     /**
      * From BeanNameAware. Allows us to capture the name of the bean, so we can load it into thisRepository.
