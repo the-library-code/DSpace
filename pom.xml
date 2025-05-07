@@ -1305,7 +1305,7 @@
                 <groupId>org.dspace.modules</groupId>
                 <artifactId>server</artifactId>
                 <classifier>classes</classifier>
-                <version>8.1</version>
+                <version>cris-2024.02.01-SNAPSHOT</version>
             </dependency>
 
             <dependency>
