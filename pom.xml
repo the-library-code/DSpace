@@ -2156,6 +2156,13 @@
                 <artifactId>xmlgraphics-commons</artifactId>
                 <version>2.9</version>
             </dependency>
+            <!-- Made provided in order to be excluded globally since conflicts with commons-logging -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jcl</artifactId>
+                <version>(${spring.version},]</version>
+                <scope>provided</scope>
+            </dependency>
             <dependency>
                 <groupId>net.minidev</groupId>
                 <artifactId>json-smart</artifactId>
