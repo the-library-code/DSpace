@@ -57,6 +57,7 @@
         <!-- Library for managing JSON Web Tokens (JWT): https://bitbucket.org/connect2id/nimbus-jose-jwt/wiki/Home
              (used by Server webapp) -->
         <nimbus-jose-jwt.version>9.48</nimbus-jose-jwt.version>
+        <json-smart.version>2.5.0</json-smart.version>
 
         <!--=== OTHER MODULE-SPECIFIC DEPENDENCIES ===-->
         <!-- Jena is used by both RDF and SWORDv2 -->
@@ -1478,7 +1479,7 @@
             </dependency>
 
             <dependency>
-		    <artifactId>spring-jdbc</artifactId>
+                <artifactId>spring-jdbc</artifactId>
                 <groupId>org.springframework</groupId>
                 <version>${spring.version}</version>
             </dependency>
@@ -1928,9 +1929,9 @@
                 <version>4.5.14</version>
             </dependency>
             <dependency>
-              <groupId>org.apache.httpcomponents</groupId>
-              <artifactId>httpmime</artifactId>
-              <version>4.5.14</version>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>4.5.14</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -2151,10 +2152,15 @@
                 <version>1.16.1</version>
             </dependency>
             <dependency>
-	            <groupId>org.apache.xmlgraphics</groupId>
-	            <artifactId>xmlgraphics-commons</artifactId>
-	            <version>2.9</version>
-          </dependency>
+                <groupId>org.apache.xmlgraphics</groupId>
+                <artifactId>xmlgraphics-commons</artifactId>
+                <version>2.9</version>
+            </dependency>
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>${json-smart.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
