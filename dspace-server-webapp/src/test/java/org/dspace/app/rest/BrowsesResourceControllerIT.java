@@ -90,6 +90,7 @@ public class BrowsesResourceControllerIT extends AbstractControllerIntegrationTe
                        BrowseIndexMatcher.eqtitleBrowseIndex("asc"),
                        BrowseIndexMatcher.typesBrowseIndex(),
                        BrowseIndexMatcher.pjtitleBrowseIndex("asc"),
+                       BrowseIndexMatcher.rsoTitleBrowseIndex("asc"),
                        BrowseIndexMatcher.hierarchicalBrowseIndex(
                            "publication-coar-types", "itemtype", "dc.type"
                        ),
