@@ -57,6 +57,7 @@
         <!-- Library for managing JSON Web Tokens (JWT): https://bitbucket.org/connect2id/nimbus-jose-jwt/wiki/Home
              (used by Server webapp) -->
         <nimbus-jose-jwt.version>9.48</nimbus-jose-jwt.version>
+        <json-smart.version>2.5.0</json-smart.version>
 
         <!--=== OTHER MODULE-SPECIFIC DEPENDENCIES ===-->
         <!-- Jena is used by both RDF and SWORDv2 -->
@@ -2161,6 +2162,11 @@
                 <artifactId>spring-jcl</artifactId>
                 <version>(${spring.version},]</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.minidev</groupId>
+                <artifactId>json-smart</artifactId>
+                <version>${json-smart.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
