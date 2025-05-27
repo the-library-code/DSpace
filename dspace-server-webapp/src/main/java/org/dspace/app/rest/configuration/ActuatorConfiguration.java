@@ -105,14 +105,6 @@ public class ActuatorConfiguration {
     }
 
     @Bean
-    @ConditionalOnEnabledHealthIndicator("solrOcr")
-    @ConditionalOnProperty("iiif.search.url")
-    public SolrHealthIndicator solrOcrHealthIndicator(SolrServerResolver solrServerResolver)
-            throws SolrServerException {
-        return new SolrHealthIndicator(solrServerResolver.getServer());
-    }
-
-    @Bean
     @ConditionalOnEnabledHealthIndicator("solrQAEvent")
     @ConditionalOnProperty("qaevents.solr.server")
     public SolrHealthIndicator solrQAEventHealthIndicator(NBEventServiceImpl nbEventService)
