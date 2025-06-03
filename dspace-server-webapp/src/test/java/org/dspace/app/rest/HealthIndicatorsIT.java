@@ -68,7 +68,6 @@ public class HealthIndicatorsIT extends AbstractControllerIntegrationTest {
                             match("solrSearchCore", Status.UP, Map.of("status", 0, "detectedPathType", "root")),
                             match("solrStatisticsCore", Status.UP, Map.of("status", 0, "detectedPathType", "root")),
                             match("solrAuthorityCore", Status.UP, Map.of("status", 0, "detectedPathType", "root")),
-                            match("solrOai", Status.UP, Map.of("status", 0, "detectedPathType", "root")),
                             match("solrAudit", Status.UP, Map.of("status", 0, "detectedPathType", "root")),
                             match("solrDedup", Status.UP, Map.of("status", 0, "detectedPathType", "root")),
                             match("solrQAEvent", Status.UP, Map.of("status", 0, "detectedPathType", "root")),
