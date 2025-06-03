@@ -47,5 +47,5 @@
 
     <bean class="org.dspace.app.suggestion.MockSolrSuggestionStorageService" autowire-candidate="true"/>
 
-    <bean class="org.dspace.qaevent.MockQAEventService" autowire-candidate="true"/>
+    <bean class="org.dspace.app.nbevent.MockNBEventService" autowire-candidate="true"/>
 </beans>

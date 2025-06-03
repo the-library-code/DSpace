@@ -105,9 +105,9 @@ public class ActuatorConfiguration {
     }
 
     @Bean
-    @ConditionalOnEnabledHealthIndicator("solrQAEvent")
-    @ConditionalOnProperty("qaevents.solr.server")
-    public SolrHealthIndicator solrQAEventHealthIndicator(NBEventServiceImpl nbEventService)
+    @ConditionalOnEnabledHealthIndicator("solrNBEvent")
+    @ConditionalOnProperty("oaire-nbevents.solr.server")
+    public SolrHealthIndicator solrNBEventHealthIndicator(NBEventServiceImpl nbEventService)
             throws MalformedURLException, SolrServerException, IOException {
         return new SolrHealthIndicator(nbEventService.getSolr());
     }
