@@ -35,9 +35,14 @@ import org.dspace.content.service.RelationshipService;
 import org.dspace.content.service.RelationshipTypeService;
 import org.dspace.core.Context;
 import org.dspace.core.exception.SQLRuntimeException;
+import org.dspace.discovery.SolrSuggestService;
 import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.validation.model.ValidationError;
 import org.dspace.workflow.WorkflowItem;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Execute three validation check on fields validation: - mandatory metadata
@@ -58,6 +63,9 @@ public class MetadataValidator implements SubmissionStepValidator {
 
     private static final Logger log = LogManager.getLogger(MetadataValidator.class);
 
+    private static final String ERROR_VALIDATION_DICTIONARY = "error.validation.dictionary";
+
+
     private DCInputsReader inputReader;
 
     private ItemService itemService;
@@ -73,6 +81,9 @@ public class MetadataValidator implements SubmissionStepValidator {
 
     private final RelationshipService relationshipService = ContentServiceFactory.getInstance()
                                                                                  .getRelationshipService();
+
+    private final SolrSuggestService solrSuggestService = DSpaceServicesFactory.getInstance()
+        .getServiceManager().getServicesByType(SolrSuggestService.class).get(0);
 
     @Override
     public List<ValidationError> validate(Context context, InProgressSubmission<?> obj, SubmissionStepConfig config) {
@@ -237,6 +248,33 @@ public class MetadataValidator implements SubmissionStepValidator {
                     addError(errors, ERROR_VALIDATION_AUTHORITY_REQUIRED,
                              "/" + OPERATION_PATH_SECTIONS + "/" + config.getId() +
                                  "/" + input.getFieldName() + "/" + md.getPlace());
+                }
+            }
+
+            if (input.getValidationDictionary() != null && !StringUtils.isEmpty(md.getValue())) {
+                try {
+                String json = solrSuggestService.getSuggestions(md.getValue(),
+                       input.getValidationDictionary());
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(json);
+                JsonNode suggest = root.get("suggest");
+                if (suggest != null) {
+                    JsonNode firstNode = suggest.fields().next().getValue();
+                    JsonNode term = firstNode.fields().next().getValue();
+                    JsonNode suggestions = term.get("suggestions");
+                    if (suggestions != null && suggestions.isArray() && suggestions.size() > 0
+                            && md.getValue().equals(suggestions.get(0)
+                                    .get("term").asText().replaceAll("</?b>", ""))) {
+                        log.debug("successfully validated {}={} for dict {}",
+                                input.getFieldName(), md.getValue(), input.getValidationDictionary());
+                    } else {
+                        addError(errors, ERROR_VALIDATION_DICTIONARY + "." + input.getValidationDictionary(),
+                                "/" + OPERATION_PATH_SECTIONS
+                                + "/" + config.getId() + "/" + input.getFieldName() + "/" + md.getPlace());
+                    }
+                }
+                } catch (Exception e) {
+                    log.error(e.getMessage());
                 }
             }
         }
