@@ -31,26 +31,38 @@ import org.apache.commons.io.IOUtils;
 import org.dspace.app.rest.matcher.PageMatcher;
 import org.dspace.app.rest.matcher.ProcessFileTypesMatcher;
 import org.dspace.app.rest.matcher.ProcessMatcher;
+import org.dspace.app.rest.repository.ProcessRestRepository;
 import org.dspace.app.rest.test.AbstractControllerIntegrationTest;
 import org.dspace.builder.EPersonBuilder;
 import org.dspace.builder.ProcessBuilder;
 import org.dspace.content.Bitstream;
 import org.dspace.content.ProcessStatus;
 import org.dspace.eperson.EPerson;
+import org.dspace.event.service.EventService;
 import org.dspace.scripts.DSpaceCommandLineParameter;
 import org.dspace.scripts.Process;
 import org.dspace.scripts.ProcessLogLevel;
 import org.dspace.scripts.service.ProcessService;
+import org.dspace.services.ConfigurationService;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 
 public class ProcessRestRepositoryIT extends AbstractControllerIntegrationTest {
 
     @Autowired
+    private EventService eventService;
+    @Autowired
     private ProcessService processService;
+    @Autowired
+    private ApplicationContext applicationContext;
+    @Autowired
+    private ConfigurationService configurationService;
 
     Process process;
 
@@ -1042,6 +1054,76 @@ public class ProcessRestRepositoryIT extends AbstractControllerIntegrationTest {
                 matchProcess(process3.getName(), eperson.getID().toString(), process3.getID(), parameters, SCHEDULED),
                 matchProcess(process1.getName(), eperson.getID().toString(), process1.getID(), parameters, SCHEDULED))))
             .andExpect(jsonPath("$.page", is(PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 1, 2))));
+
+    }
+
+    @Test
+    public void restartingTomcatNotOrchestratorProcessShouldFaildTest() throws Exception {
+        Process process1 = ProcessBuilder.createProcess(context, eperson, "item-export", parameters)
+                                         .withProcessStatus(ProcessStatus.SCHEDULED)
+                                         .build();
+        Process process2 = ProcessBuilder.createProcess(context, eperson, "export-schema", parameters)
+                                         .withProcessStatus(ProcessStatus.SCHEDULED)
+                                         .build();
+        Process process3 = ProcessBuilder.createProcess(context, eperson, "process-cleaner", parameters)
+                                         .withProcessStatus(ProcessStatus.RUNNING)
+                                         .build();
+        Process process4 = ProcessBuilder.createProcess(context, eperson, "export-schema", parameters)
+                                         .withProcessStatus(ProcessStatus.RUNNING)
+                                         .build();
+
+        String token = getAuthToken(admin.getEmail(), password);
+        getClient(token).perform(get("/api/system/processes/"))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$._embedded.processes", containsInAnyOrder(
+                                ProcessMatcher.matchProcess(process1.getName(),
+                                        String.valueOf(process1.getEPerson().getID()),
+                                        process1.getID(), parameters, ProcessStatus.SCHEDULED),
+                                ProcessMatcher.matchProcess(process2.getName(),
+                                        String.valueOf(process2.getEPerson().getID()),
+                                        process2.getID(), parameters, ProcessStatus.SCHEDULED),
+                                ProcessMatcher.matchProcess(process3.getName(),
+                                        String.valueOf(process3.getEPerson().getID()),
+                                        process3.getID(), parameters, ProcessStatus.RUNNING),
+                                ProcessMatcher.matchProcess(process4.getName(),
+                                        String.valueOf(process4.getEPerson().getID()),
+                                        process4.getID(), parameters, ProcessStatus.RUNNING),
+                                ProcessMatcher.matchProcess("mock-script", admin.getID().toString(), parameters,
+                                        ProcessStatus.SCHEDULED)
+                         )))
+                        .andExpect(jsonPath("$.page", is(
+                                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 1, 5))));
+
+        configurationService.setProperty("dspace.task.executor", "orchestratorTaskExecutor");
+        String [] ignoredScripts = {"item-export", "process-cleaner"};
+        configurationService.setProperty("orchestrator.ignore-script", ignoredScripts);
+        eventService.reloadConfiguration();
+
+        // Simulating restart tomcat, so recreate bean
+        AutowireCapableBeanFactory factory = applicationContext.getAutowireCapableBeanFactory();
+        ProcessRestRepository newBean = factory.createBean(ProcessRestRepository.class);
+        Assert.assertNotNull(newBean);
+
+        getClient(token).perform(get("/api/system/processes/"))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$._embedded.processes", containsInAnyOrder(
+                            ProcessMatcher.matchProcess(process1.getName(),
+                                        String.valueOf(process1.getEPerson().getID()),
+                                        process1.getID(), parameters, ProcessStatus.SCHEDULED),
+                            ProcessMatcher.matchProcess(process2.getName(),
+                                        String.valueOf(process2.getEPerson().getID()),
+                                        process2.getID(), parameters, ProcessStatus.FAILED),
+                            ProcessMatcher.matchProcess(process3.getName(),
+                                        String.valueOf(process3.getEPerson().getID()),
+                                        process3.getID(), parameters, ProcessStatus.RUNNING),
+                            ProcessMatcher.matchProcess(process4.getName(),
+                                        String.valueOf(process4.getEPerson().getID()),
+                                        process4.getID(), parameters, ProcessStatus.FAILED),
+                            ProcessMatcher.matchProcess("mock-script", admin.getID().toString(), parameters,
+                                        ProcessStatus.FAILED)
+                        )))
+                        .andExpect(jsonPath("$.page", is(
+                                PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 1, 5))));
 
     }
 
