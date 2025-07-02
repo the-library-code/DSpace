@@ -8,6 +8,7 @@
 package org.dspace.app.rest;
 
 import static org.dspace.app.rest.matcher.ProcessMatcher.matchProcess;
+import static org.dspace.content.ProcessStatus.RUNNING;
 import static org.dspace.content.ProcessStatus.SCHEDULED;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -1059,16 +1060,16 @@ public class ProcessRestRepositoryIT extends AbstractControllerIntegrationTest {
 
     @Test
     public void restartingTomcatNotOrchestratorProcessShouldFaildTest() throws Exception {
-        Process process1 = ProcessBuilder.createProcess(context, eperson, "item-export", parameters)
+        Process ignoredExport = ProcessBuilder.createProcess(context, eperson, "item-export", parameters)
                                          .withProcessStatus(ProcessStatus.SCHEDULED)
                                          .build();
-        Process process2 = ProcessBuilder.createProcess(context, eperson, "export-schema", parameters)
+        Process exportSchema1 = ProcessBuilder.createProcess(context, eperson, "export-schema", parameters)
                                          .withProcessStatus(ProcessStatus.SCHEDULED)
                                          .build();
-        Process process3 = ProcessBuilder.createProcess(context, eperson, "process-cleaner", parameters)
+        Process ignoredCleaner = ProcessBuilder.createProcess(context, eperson, "process-cleaner", parameters)
                                          .withProcessStatus(ProcessStatus.RUNNING)
                                          .build();
-        Process process4 = ProcessBuilder.createProcess(context, eperson, "export-schema", parameters)
+        Process exportSchema2 = ProcessBuilder.createProcess(context, eperson, "export-schema", parameters)
                                          .withProcessStatus(ProcessStatus.RUNNING)
                                          .build();
 
@@ -1076,20 +1077,22 @@ public class ProcessRestRepositoryIT extends AbstractControllerIntegrationTest {
         getClient(token).perform(get("/api/system/processes/"))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$._embedded.processes", containsInAnyOrder(
-                                ProcessMatcher.matchProcess(process1.getName(),
-                                        String.valueOf(process1.getEPerson().getID()),
-                                        process1.getID(), parameters, ProcessStatus.SCHEDULED),
-                                ProcessMatcher.matchProcess(process2.getName(),
-                                        String.valueOf(process2.getEPerson().getID()),
-                                        process2.getID(), parameters, ProcessStatus.SCHEDULED),
-                                ProcessMatcher.matchProcess(process3.getName(),
-                                        String.valueOf(process3.getEPerson().getID()),
-                                        process3.getID(), parameters, ProcessStatus.RUNNING),
-                                ProcessMatcher.matchProcess(process4.getName(),
-                                        String.valueOf(process4.getEPerson().getID()),
-                                        process4.getID(), parameters, ProcessStatus.RUNNING),
-                                ProcessMatcher.matchProcess("mock-script", admin.getID().toString(), parameters,
-                                        ProcessStatus.SCHEDULED)
+                                ProcessMatcher.matchProcess(ignoredExport.getName(),
+                                        String.valueOf(ignoredExport.getEPerson().getID()),
+                                        ignoredExport.getID(), parameters, ProcessStatus.SCHEDULED),
+                                ProcessMatcher.matchProcess(exportSchema1.getName(),
+                                        String.valueOf(exportSchema1.getEPerson().getID()),
+                                        exportSchema1.getID(), parameters, ProcessStatus.SCHEDULED),
+                                ProcessMatcher.matchProcess(ignoredCleaner.getName(),
+                                        String.valueOf(ignoredCleaner.getEPerson().getID()),
+                                        ignoredCleaner.getID(), parameters, ProcessStatus.RUNNING),
+                                ProcessMatcher.matchProcess(exportSchema2.getName(),
+                                        String.valueOf(exportSchema2.getEPerson().getID()),
+                                        exportSchema2.getID(), parameters, ProcessStatus.RUNNING),
+                                ProcessMatcher.matchProcess(
+                                    "mock-script", admin.getID().toString(), parameters,
+                                    ProcessStatus.SCHEDULED
+                                )
                          )))
                         .andExpect(jsonPath("$.page", is(
                                 PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 1, 5))));
@@ -1107,20 +1110,22 @@ public class ProcessRestRepositoryIT extends AbstractControllerIntegrationTest {
         getClient(token).perform(get("/api/system/processes/"))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$._embedded.processes", containsInAnyOrder(
-                            ProcessMatcher.matchProcess(process1.getName(),
-                                        String.valueOf(process1.getEPerson().getID()),
-                                        process1.getID(), parameters, ProcessStatus.SCHEDULED),
-                            ProcessMatcher.matchProcess(process2.getName(),
-                                        String.valueOf(process2.getEPerson().getID()),
-                                        process2.getID(), parameters, ProcessStatus.FAILED),
-                            ProcessMatcher.matchProcess(process3.getName(),
-                                        String.valueOf(process3.getEPerson().getID()),
-                                        process3.getID(), parameters, ProcessStatus.RUNNING),
-                            ProcessMatcher.matchProcess(process4.getName(),
-                                        String.valueOf(process4.getEPerson().getID()),
-                                        process4.getID(), parameters, ProcessStatus.FAILED),
-                            ProcessMatcher.matchProcess("mock-script", admin.getID().toString(), parameters,
-                                        ProcessStatus.FAILED)
+                            ProcessMatcher.matchProcess(ignoredExport.getName(),
+                                        String.valueOf(ignoredExport.getEPerson().getID()),
+                                        ignoredExport.getID(), parameters, ProcessStatus.FAILED),
+                            ProcessMatcher.matchProcess(exportSchema1.getName(),
+                                        String.valueOf(exportSchema1.getEPerson().getID()),
+                                        exportSchema1.getID(), parameters, SCHEDULED),
+                            ProcessMatcher.matchProcess(ignoredCleaner.getName(),
+                                        String.valueOf(ignoredCleaner.getEPerson().getID()),
+                                        ignoredCleaner.getID(), parameters, ProcessStatus.FAILED),
+                            ProcessMatcher.matchProcess(exportSchema2.getName(),
+                                        String.valueOf(exportSchema2.getEPerson().getID()),
+                                        exportSchema2.getID(), parameters, RUNNING),
+                            ProcessMatcher.matchProcess(
+                                "mock-script", admin.getID().toString(), parameters,
+                                ProcessStatus.SCHEDULED
+                            )
                         )))
                         .andExpect(jsonPath("$.page", is(
                                 PageMatcher.pageEntryWithTotalPagesAndElements(0, 20, 1, 5))));

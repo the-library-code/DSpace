@@ -411,9 +411,9 @@ public class ProcessServiceImpl implements ProcessService {
             return false;
         }
 
-        List<String> processIgnoreByOrchestrator = Arrays.asList(
-                                                   configurationService.getArrayProperty("orchestrator.ignore-script"));
-        return processIgnoreByOrchestrator.contains(process.getName());
+        List<String> processIgnoreByOrchestrator =
+            Arrays.asList(configurationService.getArrayProperty("orchestrator.ignore-script"));
+        return !processIgnoreByOrchestrator.contains(process.getName());
     }
 
     private String formatLogLine(int processId, String scriptName, String output, ProcessLogLevel processLogLevel) {
