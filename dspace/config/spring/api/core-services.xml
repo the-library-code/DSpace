@@ -215,6 +215,7 @@
 
     <bean class="org.dspace.correctiontype.service.impl.CorrectionTypeServiceImpl"/>
 
+    <bean class="org.dspace.app.policy.PolicyUpdaterServiceImpl" />
     <bean class="org.dspace.app.policy.MediaFilterRelatedPolicyUpdater" />
 
 </beans>
