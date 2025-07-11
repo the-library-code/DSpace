@@ -9,7 +9,6 @@ package org.dspace.app.rest;
 
 import static com.jayway.jsonpath.JsonPath.read;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static org.hamcrest.Matchers.hasSize;
 import static org.dspace.app.matcher.ResourcePolicyMatcher.matches;
 import static org.dspace.authorize.ResourcePolicy.TYPE_SUBMISSION;
 import static org.dspace.authorize.ResourcePolicy.TYPE_WORKFLOW;
