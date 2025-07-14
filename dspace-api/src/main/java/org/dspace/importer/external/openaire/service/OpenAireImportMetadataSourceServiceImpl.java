@@ -23,6 +23,7 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.app.util.XMLUtils;
 import org.dspace.content.Item;
 import org.dspace.importer.external.datamodel.ImportRecord;
 import org.dspace.importer.external.datamodel.Query;
@@ -252,7 +253,8 @@ public class OpenAireImportMetadataSourceServiceImpl extends AbstractImportMetad
             Response response = invocationBuilder.get();
             if (response.getStatus() == 200) {
                 String responseString = response.readEntity(String.class);
-                SAXBuilder saxBuilder = new SAXBuilder();
+
+                SAXBuilder saxBuilder = XMLUtils.getSAXBuilder();
                 Document document = saxBuilder.build(new StringReader(responseString));
                 Element root = document.getRootElement();
                 XPathExpression<Element> xpath = XPathFactory.instance().compile("/response/header/total",
@@ -332,7 +334,7 @@ public class OpenAireImportMetadataSourceServiceImpl extends AbstractImportMetad
 
     private List<Element> splitToRecords(String recordsSrc) {
         try {
-            SAXBuilder saxBuilder = new SAXBuilder();
+            SAXBuilder saxBuilder = XMLUtils.getSAXBuilder();
             Document document = saxBuilder.build(new StringReader(recordsSrc));
             Element root = document.getRootElement();
             List<Namespace> namespaces = Arrays.asList(
