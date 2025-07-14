@@ -97,12 +97,10 @@ public class ProcessRestRepository extends DSpaceRestRepository<ProcessRest, Int
 
     @SearchRestMethod(name = "own")
     @PreAuthorize("hasAuthority('AUTHENTICATED')")
-    public Page<ProcessRest> findByCurrentUser(@Parameter(value = "processStatus") String processStatusString,
-                                               Pageable pageable) {
+    public Page<ProcessRest> findByCurrentUser(@Parameter(value = "processStatus") String status, Pageable pageable) {
         try {
             Context context = obtainContext();
-            ProcessStatus processStatus = StringUtils.isBlank(processStatusString) ? null :
-                                          ProcessStatus.valueOf(processStatusString);
+            ProcessStatus processStatus = StringUtils.isBlank(status) ? null : ProcessStatus.valueOf(status);
             ProcessQueryParameterContainer processQueryParameterContainer = createProcessQueryParameterContainer(null,
                                                                             context.getCurrentUser(), processStatus);
             handleSearchSort(pageable, processQueryParameterContainer);
@@ -114,7 +112,7 @@ public class ProcessRestRepository extends DSpaceRestRepository<ProcessRest, Int
 
             return converter.toRestPage(processes, pageable, total, utils.obtainProjection());
         } catch (SQLException e) {
-            log.error(e.getMessage(), e);
+            log.error("Error finding processes: ", e);
             throw new RuntimeException(e.getMessage(), e);
         }
     }
