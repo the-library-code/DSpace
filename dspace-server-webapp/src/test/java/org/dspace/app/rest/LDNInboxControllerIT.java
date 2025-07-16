@@ -457,7 +457,9 @@ public class LDNInboxControllerIT extends AbstractControllerIntegrationTest {
         context.turnOffAuthorisationSystem();
 
         Community community = CommunityBuilder.createCommunity(context).withName("community").build();
-        Collection collection = CollectionBuilder.createCollection(context, community).build();
+        Collection collection = CollectionBuilder.createCollection(context, community)
+                                                 .withEntityType("Publication")
+                                                 .build();
         NotifyServiceEntity notifyServiceEntity =
             NotifyServiceBuilder.createNotifyServiceBuilder(context, "service name")
                                 .withDescription("service description")
