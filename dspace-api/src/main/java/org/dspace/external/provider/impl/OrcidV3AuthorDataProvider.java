@@ -199,9 +199,9 @@ public class OrcidV3AuthorDataProvider extends AbstractExternalDataProvider {
     }
 
     /**
-     * Retrieve a Record object based on a given orcid identifier.
+     * Retrieve a Person object based on a given orcid identifier.
      * @param id orcid identifier
-     * @return Record
+     * @return Person
      */
     public Person getBio(String id) {
         log.debug("getBio called with ID=" + id);
@@ -213,7 +213,7 @@ public class OrcidV3AuthorDataProvider extends AbstractExternalDataProvider {
             return null;
         }
         initializeAccessToken();
-        InputStream bioDocument = orcidRestConnector.get(id, accessToken);
+        InputStream bioDocument = orcidRestConnector.get(id + ((id.endsWith("/person")) ? "" : "/person"), accessToken);
         return converter.convertSinglePerson(bioDocument);
     }
 
