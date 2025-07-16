@@ -156,7 +156,7 @@ public class CrossRefImportMetadataSourceServiceImpl extends AbstractImportMetad
                 uriBuilder.addParameter("offset", start.toString());
             }
             Map<String, Map<String, String>> params = new HashMap<String, Map<String,String>>();
-            String response = liveImportClient.executeHttpGetRequest(5000, uriBuilder.toString(), params);
+            String response = liveImportClient.executeHttpGetRequest(30000, uriBuilder.toString(), params);
             if (StringUtils.isEmpty(response)) {
                 return results;
             }
