@@ -25,6 +25,7 @@ import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.kernel.ServiceManager;
+import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.junit.Test;
 public class VersionedHandleIdentifierProviderWithCanonicalHandlesIT extends AbstractIdentifierProviderIT {
     private ServiceManager serviceManager;
     private IdentifierServiceImpl identifierService;
+    private ConfigurationService configurationService;
 
     private String firstHandle;
     private String dspaceUrl;
@@ -58,8 +60,10 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandlesIT extends Abs
                                           .withName("Parent Community")
                                           .build();
         collection = CollectionBuilder.createCollection(context, parentCommunity)
+                                      .withEntityType("Publication")
                                       .withName("Collection")
                                       .build();
+        configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
         registerProvider(VersionedHandleIdentifierProviderWithCanonicalHandles.class);
     }
@@ -83,6 +87,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandlesIT extends Abs
 
     @Test
     public void testCanonicalVersionedHandleProvider() throws Exception {
+        configurationService.setProperty("versioning.submitterCanCreateNewVersion", true);
         createVersions();
 
         // Confirm the original item only has a version handle
