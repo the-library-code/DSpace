@@ -160,6 +160,9 @@ public class BitstreamResource extends AbstractResource {
     }
 
     private Context initializeContext() throws SQLException {
+        if (skipAuthCheck) {
+            return ContextUtil.obtainCurrentRequestContext();
+        }
         Context context = new Context();
         EPerson currentUser = ePersonService.find(context, currentUserUUID);
         context.setCurrentUser(currentUser);
