@@ -2,7 +2,7 @@
  * The contents of this file are subject to the license and copyright
  * detailed in the LICENSE and NOTICE files at the root of the source
  * tree and available online at
- *
+ * <p>
  * http://www.dspace.org/license/
  */
 package org.dspace.validation;
@@ -14,6 +14,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,9 +42,6 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.validation.model.ValidationError;
 import org.dspace.workflow.WorkflowItem;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Execute three validation check on fields validation: - mandatory metadata
@@ -83,7 +82,7 @@ public class MetadataValidator implements SubmissionStepValidator {
                                                                                  .getRelationshipService();
 
     private final SolrSuggestService solrSuggestService = DSpaceServicesFactory.getInstance()
-        .getServiceManager().getServicesByType(SolrSuggestService.class).get(0);
+            .getServiceManager().getServicesByType(SolrSuggestService.class).get(0);
 
     @Override
     public List<ValidationError> validate(Context context, InProgressSubmission<?> obj, SubmissionStepConfig config) {
@@ -244,7 +243,7 @@ public class MetadataValidator implements SubmissionStepValidator {
             if (isAuthorityControlled) {
                 String authKey = md.getAuthority();
                 if (metadataAuthorityService.isAuthorityRequired(fieldKey) &&
-                    StringUtils.isBlank(authKey)) {
+                        StringUtils.isBlank(authKey)) {
                     addError(errors, ERROR_VALIDATION_AUTHORITY_REQUIRED,
                              "/" + OPERATION_PATH_SECTIONS + "/" + config.getId() +
                                  "/" + input.getFieldName() + "/" + md.getPlace());
@@ -255,26 +254,26 @@ public class MetadataValidator implements SubmissionStepValidator {
             // metadatavalue and return an error if it is not present
             if (input.getValidationDictionary() != null && !StringUtils.isEmpty(md.getValue())) {
                 try {
-                String json = solrSuggestService.getSuggestions(md.getValue(),
-                       input.getValidationDictionary());
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode root = mapper.readTree(json);
-                JsonNode suggest = root.get("suggest");
-                if (suggest != null) {
-                    JsonNode firstNode = suggest.fields().next().getValue();
-                    JsonNode term = firstNode.fields().next().getValue();
-                    JsonNode suggestions = term.get("suggestions");
-                    if (suggestions != null && suggestions.isArray() && suggestions.size() > 0
-                            && md.getValue().equals(suggestions.get(0)
-                                    .get("term").asText().replaceAll("</?b>", ""))) {
-                        log.debug("successfully validated {}={} for dict {}",
-                                input.getFieldName(), md.getValue(), input.getValidationDictionary());
-                    } else {
-                        addError(errors, ERROR_VALIDATION_DICTIONARY + "." + input.getValidationDictionary(),
-                                "/" + OPERATION_PATH_SECTIONS
-                                + "/" + config.getId() + "/" + input.getFieldName() + "/" + md.getPlace());
+                    String json = solrSuggestService.getSuggestions(md.getValue(),
+                            input.getValidationDictionary());
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode root = mapper.readTree(json);
+                    JsonNode suggest = root.get("suggest");
+                    if (suggest != null) {
+                        JsonNode firstNode = suggest.fields().next().getValue();
+                        JsonNode term = firstNode.fields().next().getValue();
+                        JsonNode suggestions = term.get("suggestions");
+                        if (suggestions != null && suggestions.isArray() && suggestions.size() > 0
+                                && md.getValue().equals(suggestions.get(0)
+                                .get("term").asText().replaceAll("</?b>", ""))) {
+                            log.debug("successfully validated {}={} for dict {}",
+                                    input.getFieldName(), md.getValue(), input.getValidationDictionary());
+                        } else {
+                            addError(errors, ERROR_VALIDATION_DICTIONARY + "." + input.getValidationDictionary(),
+                                    "/" + OPERATION_PATH_SECTIONS
+                                    + "/" + config.getId() + "/" + input.getFieldName() + "/" + md.getPlace());
+                        }
                     }
-                }
                 } catch (Exception e) {
                     log.error(e.getMessage());
                 }
