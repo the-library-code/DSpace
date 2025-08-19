@@ -158,7 +158,6 @@ public class SubmissionFormConverter implements DSpaceConverter<DCInputSet, Subm
                         selMd.setControlledVocabulary(dcinput.getVocabulary());
                         selMd.setClosed(dcinput.isClosedVocabulary());
                         selMd.setVocabularyType(dcinput.getVocabularyType());
-                        selectableMetadata.add(selMd);
                     } else if (authorityUtils.isChoice(
                             dcinput.getSchema(), dcinput.getElement(), dcinput.getQualifier())) {
                         selMd.setControlledVocabulary(getAuthorityName(dcinput.getSchema(), dcinput.getElement(),
@@ -168,6 +167,7 @@ public class SubmissionFormConverter implements DSpaceConverter<DCInputSet, Subm
                                 dcinput.isClosedVocabulary()));
                         selMd.setVocabularyType(dcinput.getVocabularyType());
                     }
+                    selectableMetadata.add(selMd);
                 }
             }
         }
