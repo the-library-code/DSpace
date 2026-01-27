@@ -185,28 +185,6 @@
             <str name="buildOnCommit">true</str>
             <str name="buildOnOptimize">true</str>
         </lst>
-        <lst name="suggester">
-            <str name="name">countries_file</str>
-            <str name="lookupImpl">FuzzyLookupFactory</str>
-            <str name="dictionaryImpl">FileDictionaryFactory</str>
-            <str name="sourceLocation">countries.txt</str>
-            <str name="suggestAnalyzerFieldType">textgen</str>
-            <str name="buildOnCommit">true</str>
-            <str name="buildOnOptimize">true</str>
-            <str name="buildOnStartup">true</str>
-        </lst>
-        <!--
-        <lst name="suggester">
-            <str name="name">context</str>
-            <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
-            <str name="dictionaryImpl">DocumentDictionaryFactory</str>
-            <str name="field">suggest_value</str>
-            <str name="contextField">suggest_context</str>
-            <str name="suggestAnalyzerFieldType">textgen</str>
-            <str name="buildOnCommit">true</str>
-            <str name="buildOnOptimize">true</str>
-        </lst>
-            -->
     </searchComponent>
 
     <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy">
