@@ -171,7 +171,7 @@
             <str name="name">subject</str>
             <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
             <str name="dictionaryImpl">HighFrequencyDictionaryFactory</str>
-            <str name="field">dc.subject_suggest</str>
+            <str name="field">subject_suggest</str>
             <str name="suggestAnalyzerFieldType">textgen</str>
             <str name="buildOnCommit">true</str>
             <str name="buildOnOptimize">true</str>
