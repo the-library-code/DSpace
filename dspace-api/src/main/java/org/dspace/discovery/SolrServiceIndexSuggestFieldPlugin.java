@@ -41,15 +41,18 @@ public class SolrServiceIndexSuggestFieldPlugin implements SolrServiceIndexPlugi
     public void additionalIndex(Context context, IndexableObject idxObj, SolrInputDocument document) {
         if (idxObj instanceof IndexableItem) {
             Item item = ((IndexableItem) idxObj).getIndexedObject();
+            log.debug("Looking for suggestion fields in item {}.", item.getID());
             if (item != null) {
                 try {
                     // Index all metadata fields configured as suggestion fields
                     String[] suggestionFields = configurationService.getArrayProperty("discovery.suggest.field");
                     for (String suggestionField : suggestionFields) {
+                        log.debug("Checking suggestion field {}.", suggestionField);
                         List<MetadataValue> suggestionValues =
                                 itemService.getMetadataByMetadataString(item, suggestionField);
                         List<String> sv = new ArrayList<String>();
                         for (MetadataValue v : suggestionValues) {
+                            log.debug("Add value {} for suggestion field {}.", v.getValue(), suggestionField);
                             sv.add(v.getValue());
                         }
                         String docField = suggestionField + "_suggest";
