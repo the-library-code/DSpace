@@ -9,7 +9,6 @@ package org.dspace.discovery;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -46,7 +45,8 @@ public class SolrSuggestService {
 
     /**
      * Check whether the given dictionary name is in the configured allowlist.
-     * If no allowlist is configured, all dictionaries are allowed.
+     * If no allowlist is configured (empty or null), no dictionaries are allowed.
+     * Otherwise, only explicitly listed dictionary names are allowed.
      *
      * @param dictionary the dictionary name to check
      * @return true if allowed, false otherwise
@@ -55,7 +55,7 @@ public class SolrSuggestService {
         String[] allowed = configurationService.getArrayProperty(
                 "discovery.suggest.allowed-dictionaries");
         if (allowed == null || allowed.length == 0) {
-            return true;
+            return false;
         }
         return Arrays.asList(allowed).contains(dictionary);
     }
@@ -72,11 +72,8 @@ public class SolrSuggestService {
         SolrClient solrClient = solrSearchCore.getSolr();
 
         try {
-            SolrQuery solrQuery = new SolrQuery();
-            solrQuery.set("suggest", true);
+            SolrQuery solrQuery = createSuggestQuery(dictionary);
             solrQuery.set("suggest.q", query);
-            solrQuery.set("suggest.dictionary", dictionary);
-            solrQuery.setRequestHandler("/suggest");
 
             QueryResponse response = solrClient.query(solrQuery);
             ObjectMapper mapper = new ObjectMapper();
@@ -90,26 +87,38 @@ public class SolrSuggestService {
 
     public void rebuildDictionary(String dictionary) {
         if (isAllowedDictionary(dictionary)) {
-            SolrClient solrClient = solrSearchCore.getSolr();
-            try {
-                SolrQuery solrQuery = new SolrQuery();
-                solrQuery.set("suggest", true);
-                solrQuery.set("suggest.dictionary", dictionary);
-                solrQuery.set("suggest.build", true);
-                solrQuery.setRequestHandler("/suggest");
-                QueryResponse response = solrClient.query(solrQuery);
-            } catch (SolrServerException | IOException e) {
-                log.error("Unable to rebuild dictionary {}: {}", dictionary, e.getMessage());
-            }
+            sendBuildRequest(dictionary);
         }
     }
 
     public void rebuildAllDictionaries() {
         log.debug("Rebuilding all dictionaries");
-        List<String> allowedDictionaries = List.of(
-                configurationService.getArrayProperty("discovery.suggest.allowed-dictionaries"));
-        for (String dictionary : allowedDictionaries) {
-            rebuildDictionary(dictionary);
+        String[] allowed = configurationService.getArrayProperty("discovery.suggest.allowed-dictionaries");
+        if (allowed == null || allowed.length == 0) {
+            log.debug("No allowed dictionaries configured, skipping rebuild");
+            return;
+        }
+        for (String dictionary : allowed) {
+            sendBuildRequest(dictionary);
+        }
+    }
+
+    private SolrQuery createSuggestQuery(String dictionary) {
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.set("suggest", true);
+        solrQuery.set("suggest.dictionary", dictionary);
+        solrQuery.setRequestHandler("/suggest");
+        return solrQuery;
+    }
+
+    private void sendBuildRequest(String dictionary) {
+        SolrClient solrClient = solrSearchCore.getSolr();
+        try {
+            SolrQuery solrQuery = createSuggestQuery(dictionary);
+            solrQuery.set("suggest.build", true);
+            solrClient.query(solrQuery);
+        } catch (SolrServerException | IOException e) {
+            log.error("Unable to rebuild dictionary {}: {}", dictionary, e.getMessage());
         }
     }
 

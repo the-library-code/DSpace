@@ -461,4 +461,48 @@ public class AutocompleteSuggestionIT extends AbstractControllerIntegrationTest 
                                 .param("q", "test"))
                 .andExpect(status().isBadRequest());
     }
+
+    /**
+     * Test that when discovery.suggest.allowed-dictionaries is empty (not configured),
+     * ALL dictionaries are denied (HTTP 403).
+     */
+    @Test
+    public void emptyAllowedDictionariesShouldDenyAll() throws Exception {
+        // Set the allowed-dictionaries to an empty value
+        configurationService.setProperty("discovery.suggest.allowed-dictionaries", new String[]{});
+
+        String userToken = getAuthToken(eperson.getEmail(), password);
+
+        // Even a previously-allowed dictionary like "subject" should now be forbidden
+        getClient(userToken).perform(
+                        get("/api/discover/suggest")
+                                .param("dict", "subject")
+                                .param("q", "test"))
+                .andExpect(status().isForbidden());
+
+        // Another dictionary should also be forbidden
+        getClient(userToken).perform(
+                        get("/api/discover/suggest")
+                                .param("dict", "countries_file")
+                                .param("q", "test"))
+                .andExpect(status().isForbidden());
+    }
+
+    /**
+     * Test that the /suggest/build endpoint also respects empty allowed-dictionaries
+     * by returning 403 when the list is empty.
+     */
+    @Test
+    public void emptyAllowedDictionariesBuildShouldDenyAll() throws Exception {
+        configurationService.setProperty("discovery.suggest.allowed-dictionaries", new String[]{});
+
+        String adminToken = getAuthToken(admin.getEmail(), password);
+
+        // Building a specific dictionary should be forbidden when allowlist is empty
+        getClient(adminToken).perform(
+                        get("/api/discover/suggest/build")
+                                .param("dict", "subject"))
+                .andExpect(status().isForbidden());
+    }
+
 }
